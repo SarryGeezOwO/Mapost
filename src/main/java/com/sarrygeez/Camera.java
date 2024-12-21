@@ -3,6 +3,7 @@ package com.sarrygeez;
 public class Camera extends Transform {
 
     private float zoom = 1;
+    public float panSpeed = 50;
 
     public Camera() {
 

@@ -81,4 +81,18 @@ public class AppGraphics {
 
     }
 
+
+    public static void drawLine(Graphics2D g2D, Transform camera, Vector2 start, Vector2 end, int thickness, Color color) {
+        g2D.setColor(color);
+
+        AffineTransform originalTransform = g2D.getTransform();
+        g2D.translate(-camera.position.x, -camera.position.y);
+
+        g2D.setStroke(new BasicStroke(thickness));
+        g2D.drawLine((int) start.x, (int) start.y, (int) end.x, (int) end.y);
+
+        g2D.setTransform(originalTransform);
+        g2D.setStroke(new BasicStroke());
+    }
+
 }

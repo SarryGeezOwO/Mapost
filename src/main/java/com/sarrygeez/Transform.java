@@ -24,6 +24,12 @@ public class Transform {
         updateBbox();
     }
 
+    public Transform(float x, float y) {
+        position = new Vector2(x, y);
+        scale = new Vector2(1, 1);
+        updateBbox();
+    }
+
     public void updateBbox() {
         // Anchor is positioned in Top-left format
         bbox_left      = position.x;

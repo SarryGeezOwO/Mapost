@@ -16,8 +16,8 @@ public class Application extends JFrame {
     protected static ArrayList<FlatSVGIcon> icons = new ArrayList<>();
     public static final String WINDOW_TITLE = "Mapost";
     public static final String APP_VERSION = "1.0.0";
-    public static int WINDOW_WIDTH = 1000;
-    public static int WINDOW_HEIGHT = 700;
+    public static int WINDOW_WIDTH = 1400;
+    public static int WINDOW_HEIGHT = 900;
 
     public static final GridMapContext GRID_MAP_CONTEXT = new GridMapContext();
 
@@ -47,7 +47,11 @@ public class Application extends JFrame {
             }
         });
 
-        GRID_MAP_CONTEXT.objects.add(new RectComp(0, 0, Color.RED, Color.BLACK));
+        RectComp center = new RectComp(200, 50, Color.WHITE, Color.BLACK);
+        center.transform.scale = new Vector2(10f, 5f);
+        center.radius = 10;
+        center.borderWidth = 2;
+        GRID_MAP_CONTEXT.objects.add(center);
         GRID_MAP_CONTEXT.objects.add(new RectComp(600, 500, Color.GREEN, Color.BLUE));
         GRID_MAP_CONTEXT.objects.add(new RectComp(-400, -500, Color.YELLOW, Color.PINK));
     }
