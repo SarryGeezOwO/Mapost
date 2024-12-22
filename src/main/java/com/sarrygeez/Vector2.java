@@ -22,6 +22,13 @@ public class Vector2 {
 
     @Override
     public String toString() {
-        return "["+x + " : " +y+"]";
+        String xStr = (x % 1 == 0) ? String.format("%.0f", x) : String.valueOf(x);
+        String yStr = (y % 1 == 0) ? String.format("%.0f", y) : String.valueOf(y);
+        return "[" + xStr + " : " + yStr + "]";
+    }
+
+
+    public static float dotProduct(Vector2 vec1, Vector2 vec2) {
+        return vec1.x * vec2.x + vec1.y * vec2.y;
     }
 }

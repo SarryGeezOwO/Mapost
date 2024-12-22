@@ -51,6 +51,7 @@ public class Application extends JFrame {
         center.transform.scale = new Vector2(10f, 5f);
         center.radius = 10;
         center.borderWidth = 2;
+        center.transform.updateBbox();
         GRID_MAP_CONTEXT.objects.add(center);
         GRID_MAP_CONTEXT.objects.add(new RectComp(600, 500, Color.GREEN, Color.BLUE));
         GRID_MAP_CONTEXT.objects.add(new RectComp(-400, -500, Color.YELLOW, Color.PINK));
