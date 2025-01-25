@@ -11,7 +11,6 @@ public class RectComp {
     public int borderWidth = 1;
     public Color background;
     public Color borderColor;
-    public static final int UPDATE_TIME = 50;
     private boolean mouseInside = false;
 
     private final List<MouseActionAdapter> adapters = new ArrayList<>();
@@ -20,48 +19,34 @@ public class RectComp {
         transform = new Transform(0, 0);
         background = Color.WHITE;
         borderColor = Color.BLACK;
-        initThread();
     }
 
     public RectComp(int x, int y, Color background, Color borderColor) {
         this.transform = new Transform(x, y);
         this.background = background;
         this.borderColor = borderColor;
-        initThread();
     }
 
-    private void initThread() {
-        new Thread(() -> {
-
-            try {
-                while(true) {
-
-                    // mouse events
-                    if(positionInsideBbox(Camera.MOUSE_CAM_POS)) {
-                        if(!mouseInside) {
-                            this.borderColor = Color.decode("#7235FF");
-                            this.background = Color.decode("#D7BFFF");
-                            mouseInside = true;
-                        }
-
-                        for (MouseActionAdapter adapter : adapters) {
-                            adapter.onMouseStay();
-                        }
-                    }
-                    else {
-                        if(mouseInside) {
-                            this.borderColor = new Color(0, 0, 0);
-                            this.background = new Color(255, 255, 255);
-                            mouseInside = false;
-                        }
-                    }
-
-                    Thread.sleep(UPDATE_TIME);
-                }
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+    public void update() {
+        // mouse events
+        if(positionInsideBbox(Camera.MOUSE_CAM_POS)) {
+            if(!mouseInside) {
+                this.borderColor = Color.decode("#7235FF");
+                this.background = Color.decode("#D7BFFF");
+                this.mouseInside = true;
             }
-        }).start();
+
+            for (MouseActionAdapter adapter : adapters) {
+                adapter.onMouseStay();
+            }
+        }
+        else {
+            if(mouseInside) {
+                this.borderColor = new Color(0, 0, 0);
+                this.background = new Color(255, 255, 255);
+                this.mouseInside = false;
+            }
+        }
     }
 
     public void draw(Graphics2D g2d, Camera camera) {

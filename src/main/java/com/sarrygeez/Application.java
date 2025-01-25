@@ -48,7 +48,11 @@ public class Application extends JFrame {
             }
         });
 
+        TextPost custom = new TextPost("Aniza", "How to cook", "01-25-2025");
+        custom.transform.setPosition(new Vector2(255, 255));
+
         GRID_MAP_CONTEXT.objects.add(new TextPost("SarryGeez", "Hello, World!", "01-25-2025"));
+        GRID_MAP_CONTEXT.objects.add(custom);
     }
 
     public static Vector2 toCartesianCoordinate(Vector2 base) {

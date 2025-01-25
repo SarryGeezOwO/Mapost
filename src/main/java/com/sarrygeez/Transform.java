@@ -45,6 +45,10 @@ public class Transform {
     }
 
 
+    public void setPosition(Vector2 newPos) {
+        position = newPos;
+        updateBbox();
+    }
 
     public void setX(int x) {
         position.x = x;

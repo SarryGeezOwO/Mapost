@@ -68,15 +68,16 @@ public class AppGraphics {
         );
     }
 
-    public static void drawRect(Graphics2D g2D, Transform camera, Transform transform, int radius, int borderThickness, Color bodyColor, Color borderColor) {
+    public static void drawRect(Graphics2D g2D, Transform camera, Transform transform,
+            int radius, int borderThickness, Color bodyColor, Color borderColor) {
         AffineTransform originalTransform = g2D.getTransform();
         applyTransform(g2D, camera);
         drawRectangle(g2D, transform, radius, borderThickness, bodyColor, borderColor);
         resetTransform(g2D, originalTransform);
     }
 
-    public static void drawGUIRect(Graphics2D g2D, Transform transform, int radius,
-            int borderThickness, Color bodyColor, Color borderColor) {
+    public static void drawGUIRect(Graphics2D g2D, Transform transform,
+            int radius, int borderThickness, Color bodyColor, Color borderColor) {
         AffineTransform originalTransform = g2D.getTransform();
         if (mode == GraphicMode.GUI) {
             drawRectangle(g2D, transform, radius, borderThickness, bodyColor, borderColor);
@@ -87,13 +88,10 @@ public class AppGraphics {
 
     // ====================================== CIRCLE ===========================
 
-    private static void drawCircle(Graphics2D g2D, Transform camera, Transform transform, int thickness, boolean isOutline, Color color) {
+    private static void drawCircle(Graphics2D g2D, Transform camera, Transform transform,
+            int thickness, boolean isOutline, Color color) {
         g2D.setColor(color);
         int offset = thickness / 2;
-
-        if (mode == GraphicMode.CAMERA) {
-            g2D.translate(-camera.position.x, -camera.position.y);
-        }
 
         if (isOutline) {
             g2D.drawOval((int) transform.position.x - offset,
@@ -106,13 +104,16 @@ public class AppGraphics {
         }
     }
 
-    public static void drawPoint(Graphics2D g2D, Transform camera, Transform transform, int thickness, boolean isOutline, Color color) {
+    public static void drawPoint(Graphics2D g2D, Transform camera, Transform transform,
+            int thickness, boolean isOutline, Color color) {
         AffineTransform originalTransform = g2D.getTransform();
+        applyTransform(g2D, camera);
         drawCircle(g2D, camera, transform, thickness, isOutline, color);
         resetTransform(g2D, originalTransform);
     }
 
-    public static void drawGUIPoint(Graphics2D g2D, Transform transform, int thickness, boolean isOutline, Color color) {
+    public static void drawGUIPoint(Graphics2D g2D, Transform transform,
+            int thickness, boolean isOutline, Color color) {
         AffineTransform originalTransform = g2D.getTransform();
         if (mode == GraphicMode.GUI) {
             drawCircle(g2D, null, transform, thickness, isOutline, color);
@@ -123,16 +124,34 @@ public class AppGraphics {
 
     // ====================================== LINE ===========================
 
-    public static void drawLine(Graphics2D g2D, Transform camera, Vector2 start, Vector2 end,
-            int thickness, Color color) {
+    private static void drawLineRaw(Graphics2D g2D, Transform camera,
+            Vector2 start, Vector2 end, int thickness, Color color) {
         g2D.setColor(color);
-        AffineTransform originalTransform = g2D.getTransform();
-        g2D.translate(-camera.position.x, -camera.position.y);
-
         g2D.setStroke(new BasicStroke(thickness));
         g2D.drawLine((int) start.x, (int) start.y, (int) end.x, (int) end.y);
-
-        resetTransform(g2D, originalTransform);
         g2D.setStroke(new BasicStroke());
     }
+
+    public static void drawLine(Graphics2D g2D, Transform camera,
+            Vector2 start, Vector2 end, int thickness, Color color) {
+        AffineTransform originalTransform = g2D.getTransform();
+        applyTransform(g2D, camera);
+        drawLineRaw(g2D, camera, start, end, thickness, color);
+        resetTransform(g2D, originalTransform);
+    }
+
+    public static void drawGUILine(Graphics2D g2D,
+            Vector2 start, Vector2 end, int thickness, Color color) {
+        AffineTransform originalTransform = g2D.getTransform();
+        if (mode == GraphicMode.GUI) {
+            drawLineRaw(g2D, null, start, end, thickness, color);
+        }
+        resetTransform(g2D, originalTransform);
+    }
+
+
+
+    // ====================================== STRING ===========================
+
+
 }

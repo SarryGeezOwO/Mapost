@@ -100,16 +100,19 @@ public class ContentPane extends JPanel {
         Graphics2D g2D = (Graphics2D)g.create();
         g2D.setFont(new Font(FlatInterFont.FAMILY, Font.PLAIN, 14));
         g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        drawGridLines(g2D);
+        drawGridGuidelines(g2D, false);
 
+        AppGraphics.useCamera(); // ========= CAMERA BASED RENDERS
         AppGraphics.drawLine(g2D, camera, new Vector2(-100000,       0), new Vector2(100000,    0), 1, Color.BLACK); // Horizontal
         AppGraphics.drawLine(g2D, camera, new Vector2(0,       -100000), new Vector2(0,     100000), 1, Color.BLACK); // Vertical
+        AppGraphics.drawLine(g2D, camera, new Vector2(0, 0), Camera.MOUSE_CAM_POS, 5, Color.YELLOW);
 
         for(RectComp rect : Application.GRID_MAP_CONTEXT.objects) {
-            //AppGraphics.drawRect(g2D, camera, rect.transform, rect.radius, rect.borderWidth, rect.background, rect.borderColor);
+            rect.update();
             rect.draw(g2D, camera);
         }
 
+        AppGraphics.useGUI(); // ============== GUI BASED RENDERS
         g2D.setColor(Color.BLACK);
         g2D.drawString("Mouse(Component) pos:   " + mousePosition.toString(), 10, getHeight() - 72);
         g2D.drawString("Mouse(Grid) pos:   " + GridMapContext.MOUSE_POSITION.toString(), 10, getHeight() - 52);
@@ -123,25 +126,35 @@ public class ContentPane extends JPanel {
     }
 
 
-    private void drawGridLines(Graphics2D g2d) {
-        g2d.setColor(new Color(25, 25, 25, 70));
+    private void drawGridGuidelines(Graphics2D g2d, boolean isLines) {
+        g2d.setColor(new Color(25, 25, 25, 50));
         int width = getWidth();
         int height = getHeight();
-        int cellSize = GridMapContext.CELL_SIZE;
+        int cellSize = 64;
         Vector2 camPos = camera.position;
 
         // Calculate the top-left corner in terms of grid
         int startX = -(camPos.getX_int() % cellSize + cellSize) % cellSize; // Ensures positive values
         int startY = -(camPos.getY_int() % cellSize + cellSize) % cellSize;
 
-        // Draw vertical lines
-        for (int x = startX; x < width; x += cellSize) {
-            g2d.drawLine(x, 0, x, height);
-        }
+        if (isLines) {
+            // Draw vertical lines
+            for (int x = startX; x < width; x += cellSize) {
+                g2d.drawLine(x, 0, x, height);
+            }
 
-        // Draw horizontal lines
-        for (int y = startY; y < height; y += cellSize) {
-            g2d.drawLine(0, y, width, y);
+            // Draw horizontal lines
+            for (int y = startY; y < height; y += cellSize) {
+                g2d.drawLine(0, y, width, y);
+            }
+        }
+        else {
+            // GridPoints
+            for (int x = startX; x < width; x += cellSize) {
+                for (int y = startY; y < height; y += cellSize) {
+                    g2d.fillOval(x-3, y-3, 6, 6);
+                }
+            }
         }
     }
 
@@ -199,8 +212,7 @@ public class ContentPane extends JPanel {
     private void gotoConfirm(Vector2 pos, JPopupMenu caller) {
         Vector2 coord = Application.toCartesianCoordinate(pos);
 
-        camera.setX(coord.getX_int());
-        camera.setY(coord.getY_int());
+        camera.setPosition(coord);
         revalidate();
         repaint();
 
