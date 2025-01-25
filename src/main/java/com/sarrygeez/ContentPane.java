@@ -106,7 +106,8 @@ public class ContentPane extends JPanel {
         AppGraphics.drawLine(g2D, camera, new Vector2(0,       -100000), new Vector2(0,     100000), 1, Color.BLACK); // Vertical
 
         for(RectComp rect : Application.GRID_MAP_CONTEXT.objects) {
-            AppGraphics.drawRect(g2D, camera, rect.transform, rect.radius, rect.borderWidth, rect.background, rect.borderColor);
+            //AppGraphics.drawRect(g2D, camera, rect.transform, rect.radius, rect.borderWidth, rect.background, rect.borderColor);
+            rect.draw(g2D, camera);
         }
 
         g2D.setColor(Color.BLACK);

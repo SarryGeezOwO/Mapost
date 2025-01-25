@@ -4,6 +4,7 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.fonts.inter.FlatInterFont;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import com.sarrygeez.Posts.TextPost;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,14 +48,7 @@ public class Application extends JFrame {
             }
         });
 
-        RectComp center = new RectComp(200, 50, Color.WHITE, Color.BLACK);
-        center.transform.scale = new Vector2(10f, 5f);
-        center.radius = 10;
-        center.borderWidth = 2;
-        center.transform.updateBbox();
-        GRID_MAP_CONTEXT.objects.add(center);
-        GRID_MAP_CONTEXT.objects.add(new RectComp(600, 500, Color.GREEN, Color.BLUE));
-        GRID_MAP_CONTEXT.objects.add(new RectComp(-400, -500, Color.YELLOW, Color.PINK));
+        GRID_MAP_CONTEXT.objects.add(new TextPost("SarryGeez", "Hello, World!", "01-25-2025"));
     }
 
     public static Vector2 toCartesianCoordinate(Vector2 base) {

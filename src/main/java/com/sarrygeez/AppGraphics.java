@@ -6,12 +6,20 @@ import java.awt.geom.AffineTransform;
 @SuppressWarnings("unused")
 public class AppGraphics {
 
+   public enum GraphicMode {
+        CAMERA, GUI
+    }
+
+    public static GraphicMode mode;
+
     private AppGraphics() {}
 
-    //TODO: Make an option to draw relative to the camera or the window
+    //NOTE: an option to draw relative to the camera or the window
     //      DrawGUI - elements not affected by camera position or scale
     //      Draw    - elements affected by camera position or scale
 
+    public static void useGUI() { mode = GraphicMode.GUI; }
+    public static void useCamera() { mode = GraphicMode.CAMERA; }
 
     public static void drawRect(Graphics2D g2D, Transform camera, Transform transform, int radius, int borderThickness, Color bodyColor,  Color borderColor) {
         AffineTransform originalTransform = g2D.getTransform();

@@ -16,11 +16,21 @@ public class RectComp {
 
     private final List<MouseActionAdapter> adapters = new ArrayList<>();
 
+    public RectComp() {
+        transform = new Transform(0, 0);
+        background = Color.WHITE;
+        borderColor = Color.BLACK;
+        initThread();
+    }
+
     public RectComp(int x, int y, Color background, Color borderColor) {
         this.transform = new Transform(x, y);
         this.background = background;
         this.borderColor = borderColor;
+        initThread();
+    }
 
+    private void initThread() {
         new Thread(() -> {
 
             try {
@@ -29,7 +39,8 @@ public class RectComp {
                     // mouse events
                     if(positionInsideBbox(Camera.MOUSE_CAM_POS)) {
                         if(!mouseInside) {
-                            this.borderColor = new Color(0, 0, 255);
+                            this.borderColor = Color.decode("#7235FF");
+                            this.background = Color.decode("#D7BFFF");
                             mouseInside = true;
                         }
 
@@ -40,6 +51,7 @@ public class RectComp {
                     else {
                         if(mouseInside) {
                             this.borderColor = new Color(0, 0, 0);
+                            this.background = new Color(255, 255, 255);
                             mouseInside = false;
                         }
                     }
@@ -50,6 +62,11 @@ public class RectComp {
                 throw new RuntimeException(e);
             }
         }).start();
+    }
+
+    public void draw(Graphics2D g2d, Camera camera) {
+        // override this
+        AppGraphics.drawRect(g2d, camera, transform, radius, borderWidth, background, borderColor);
     }
 
     public void addMouseActionListener(MouseActionAdapter adapter) {
