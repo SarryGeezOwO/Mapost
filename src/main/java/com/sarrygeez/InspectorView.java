@@ -17,7 +17,7 @@ public class InspectorView extends JPopupMenu {
         String widthStr =   (width % 1 == 0) ? String.format("%.0f", width) : String.valueOf(width);
         String heightStr =  (height % 1 == 0) ? String.format("%.0f", height) : String.valueOf(height);
 
-        add(new JLabel("Position: " + rect.transform.position.toString()));
+        add(new JLabel("World Position: " + rect.transform.position.toString()));
         add(new JLabel("Scale: " + rect.transform.scale.toString()));
         add(Box.createRigidArea(new Dimension(0, 10)));
         add(new JLabel("Width: " + widthStr));

@@ -1,6 +1,8 @@
 package com.sarrygeez;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RectComp {
 
@@ -9,11 +11,49 @@ public class RectComp {
     public int borderWidth = 1;
     public Color background;
     public Color borderColor;
+    public static final int UPDATE_TIME = 50;
+    private boolean mouseInside = false;
+
+    private final List<MouseActionAdapter> adapters = new ArrayList<>();
 
     public RectComp(int x, int y, Color background, Color borderColor) {
         this.transform = new Transform(x, y);
         this.background = background;
         this.borderColor = borderColor;
+
+        new Thread(() -> {
+
+            try {
+                while(true) {
+
+                    // mouse events
+                    if(positionInsideBbox(Camera.MOUSE_CAM_POS)) {
+                        if(!mouseInside) {
+                            this.borderColor = new Color(0, 0, 255);
+                            mouseInside = true;
+                        }
+
+                        for (MouseActionAdapter adapter : adapters) {
+                            adapter.onMouseStay();
+                        }
+                    }
+                    else {
+                        if(mouseInside) {
+                            this.borderColor = new Color(0, 0, 0);
+                            mouseInside = false;
+                        }
+                    }
+
+                    Thread.sleep(UPDATE_TIME);
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }
+
+    public void addMouseActionListener(MouseActionAdapter adapter) {
+        adapters.add(adapter);
     }
 
     /**

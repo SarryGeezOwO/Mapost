@@ -30,7 +30,7 @@ public class Application extends JFrame {
         setTitle(WINDOW_TITLE + " v" + APP_VERSION);
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setMinimumSize(new Dimension(700, 500));
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         ContentPane cp = new ContentPane();
@@ -55,6 +55,13 @@ public class Application extends JFrame {
         GRID_MAP_CONTEXT.objects.add(center);
         GRID_MAP_CONTEXT.objects.add(new RectComp(600, 500, Color.GREEN, Color.BLUE));
         GRID_MAP_CONTEXT.objects.add(new RectComp(-400, -500, Color.YELLOW, Color.PINK));
+    }
+
+    public static Vector2 toCartesianCoordinate(Vector2 base) {
+        return new Vector2(
+            base.getX_int() - Application.WINDOW_WIDTH/2,
+            base.getY_int() - Application.WINDOW_HEIGHT/2
+        );
     }
 
     public static void main(String[] args) {

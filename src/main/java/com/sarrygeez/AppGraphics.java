@@ -60,24 +60,26 @@ public class AppGraphics {
 
         AffineTransform originalTransform = g2D.getTransform();
         g2D.translate(-camera.position.x, -camera.position.y);
+        int offset = thickness/2;
 
         if (isOutline) {
-            g2D.drawOval((int) transform.position.x, (int) transform.position.y, thickness, thickness);
+            g2D.drawOval((int) transform.position.x-offset, (int) transform.position.y-offset, thickness, thickness);
             return;
         }
 
-        g2D.fillOval((int) transform.position.x, (int) transform.position.y, thickness, thickness);
+        g2D.fillOval((int) transform.position.x-offset, (int) transform.position.y-offset, thickness, thickness);
         g2D.setTransform(originalTransform);
     }
 
     public static void drawGUIPoint(Graphics2D g2D, Transform transform, int thickness, boolean isOutline, Color color) {
         g2D.setColor(color);
+        int offset = thickness/2;
         if (isOutline) {
-            g2D.drawOval((int) transform.position.x, (int) transform.position.y, thickness, thickness);
+            g2D.drawOval((int) transform.position.x-offset, (int) transform.position.y-offset, thickness, thickness);
             return;
         }
 
-        g2D.fillOval((int) transform.position.x, (int) transform.position.y, thickness, thickness);
+        g2D.fillOval((int) transform.position.x-offset, (int) transform.position.y-offset, thickness, thickness);
 
     }
 

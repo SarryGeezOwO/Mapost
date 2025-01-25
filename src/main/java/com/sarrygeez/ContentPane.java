@@ -64,7 +64,7 @@ public class ContentPane extends JPanel {
             public void mouseDragged(MouseEvent e) {
                 GridMapContext.MOUSE_POSITION.x = e.getXOnScreen();
                 GridMapContext.MOUSE_POSITION.y = e.getYOnScreen();
-                updateCameraPosition(new Vector2(e.getX(), e.getY()));
+                camera.updateCameraMousePosition(new Vector2(e.getX(), e.getY()));
 
                 if (isPanning && lastMousePosition != null) {
                     mousePosition = new Vector2(e.getX(), e.getY());
@@ -73,8 +73,8 @@ public class ContentPane extends JPanel {
                             mousePosition.y - lastMousePosition.y
                     );
 
-                    camera.position.x -= (float) Math.round(dir.x * camera.panSpeed / camera.scale.x);
-                    camera.position.y -= (float) Math.round(dir.y * (camera.panSpeed/2) / camera.scale.y);
+                    camera.position.x -= dir.x * camera.panSpeed / camera.scale.x;
+                    camera.position.y -= dir.y * (camera.panSpeed/2) / camera.scale.y;
                     lastMousePosition = mousePosition;
 
                 }
@@ -87,7 +87,7 @@ public class ContentPane extends JPanel {
                 mousePosition.y = e.getY();
                 GridMapContext.MOUSE_POSITION.x = e.getXOnScreen();
                 GridMapContext.MOUSE_POSITION.y = e.getYOnScreen();
-                updateCameraPosition(mousePosition);
+                camera.updateCameraMousePosition(mousePosition);
                 repaint();
             }
         });
@@ -110,19 +110,15 @@ public class ContentPane extends JPanel {
         }
 
         g2D.setColor(Color.BLACK);
+        g2D.drawString("Mouse(Component) pos:   " + mousePosition.toString(), 10, getHeight() - 72);
         g2D.drawString("Mouse(Grid) pos:   " + GridMapContext.MOUSE_POSITION.toString(), 10, getHeight() - 52);
         g2D.drawString("Mouse(Camera) pos:   " + Camera.MOUSE_CAM_POS.toString(), 10, getHeight() - 32);
-        g2D.drawString("camera pos:          " + camera.position.toString(), 10, getHeight() - 12);
+        g2D.drawString("camera pos:          " + camera.getCartesianPosition().toString(), 10, getHeight() - 12);
         g2D.dispose();
     }
 
     public Camera getCamera() {
         return camera;
-    }
-
-    public void updateCameraPosition(Vector2 basePos) {
-        Camera.MOUSE_CAM_POS.x = basePos.getX_int() + camera.position.x;
-        Camera.MOUSE_CAM_POS.y = basePos.getY_int() + camera.position.y;
     }
 
 
@@ -180,22 +176,33 @@ public class ContentPane extends JPanel {
 
             JButton confirm = new JButton("confirm");
             confirm.addActionListener(e1 -> {
-                int xPos = (int)xNum.getValue();
-                int yPos = (int)yNum.getValue();
-                updateCameraPosition(new Vector2(xPos, yPos));
-                repaint();
-                revalidate();
+                Vector2 pos = new Vector2(
+                        (int)xNum.getValue(),
+                        (int)yNum.getValue()
+                );
+                gotoConfirm(pos, whereInput);
             });
 
             whereInput.add(new JLabel("X: "));
-            whereInput.add(xNum, "wrap, grow, width 80:80:80");
+            whereInput.add(xNum, "wrap, grow, width 120:120:120");
 
             whereInput.add(new JLabel("Y: "));
-            whereInput.add(yNum, "wrap, grow, width 80:80:80");
+            whereInput.add(yNum, "wrap, grow, width 120:120:120");
             whereInput.add(confirm, "span, grow");
             whereInput.show(invoker, mousePosition.getX_int(), mousePosition.getY_int());
         });
 
         return item;
+    }
+
+    private void gotoConfirm(Vector2 pos, JPopupMenu caller) {
+        Vector2 coord = Application.toCartesianCoordinate(pos);
+
+        camera.setX(coord.getX_int());
+        camera.setY(coord.getY_int());
+        revalidate();
+        repaint();
+
+        caller.setVisible(false);
     }
 }
