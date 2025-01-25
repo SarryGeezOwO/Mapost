@@ -7,7 +7,7 @@ public class GridMapContext {
 
     public static final int CELL_SIZE = 32; // to determine positions and shit
     public List<RectComp> objects = new ArrayList<>();
-    public static Vector2 MOUSE_POSITION = new Vector2(); // Screen based
+    public static Vector2 MOUSE_POSITION = new Vector2(); // Screen mouse position
 
     public GridMapContext() {
 

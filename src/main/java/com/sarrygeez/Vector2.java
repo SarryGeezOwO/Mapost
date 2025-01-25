@@ -27,6 +27,13 @@ public class Vector2 {
         return "[" + xStr + " : " + yStr + "]";
     }
 
+    public int getX_int() {
+        return (int)x;
+    }
+
+    public int getY_int() {
+        return (int)y;
+    }
 
     public static float dotProduct(Vector2 vec1, Vector2 vec2) {
         return vec1.x * vec2.x + vec1.y * vec2.y;

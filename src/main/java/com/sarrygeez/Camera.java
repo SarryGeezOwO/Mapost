@@ -4,7 +4,7 @@ public class Camera extends Transform {
 
     private float zoom = 1;
     public float panSpeed = 50;
-    public static Vector2 MOUSE_CAM_POS = new Vector2(); // Based on camera
+    public static Vector2 MOUSE_CAM_POS = new Vector2();
 
     public Camera() {
 
