@@ -34,7 +34,7 @@ public class Application extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        ContentPane cp = new ContentPane();
+        RenderSurface cp = new RenderSurface(); // this stands for ContentPane ok? It's not something devious or whatever
         setContentPane(cp);
 
         setIconImage(AppTools.getSVG("AppIMG.svg").getImage());

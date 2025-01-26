@@ -153,5 +153,11 @@ public class AppGraphics {
 
     // ====================================== STRING ===========================
 
-
+    private static void drawString(Graphics2D g2D, Transform camera,
+            Vector2 start, Vector2 end, int thickness, Color color) {
+        g2D.setColor(color);
+        g2D.setStroke(new BasicStroke(thickness));
+        g2D.drawLine((int) start.x, (int) start.y, (int) end.x, (int) end.y);
+        g2D.setStroke(new BasicStroke());
+    }
 }

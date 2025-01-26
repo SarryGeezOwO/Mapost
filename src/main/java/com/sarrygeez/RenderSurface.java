@@ -7,7 +7,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class ContentPane extends JPanel {
+/*
+    A very unclear class object, literally breaking every rule of
+    code design in mankind. Well it's not like someone will be reading this anyway ¯\_(ツ)_/¯
+*/
+
+public class RenderSurface extends JPanel {
 
     @SuppressWarnings("unused")
     public enum GuidelineType {
@@ -23,7 +28,7 @@ public class ContentPane extends JPanel {
     public static int guideLineColorAlpha = 50;
     public static GuidelineType guidelineType = GuidelineType.DOTS;
 
-    public ContentPane() {
+    public RenderSurface() {
 
         setDoubleBuffered(true);
         setBackground(new Color(80, 80, 95));
