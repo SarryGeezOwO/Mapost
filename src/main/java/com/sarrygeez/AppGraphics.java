@@ -88,35 +88,35 @@ public class AppGraphics {
 
     // ====================================== CIRCLE ===========================
 
-    private static void drawCircle(Graphics2D g2D, Transform camera, Transform transform,
+    private static void drawCircle(Graphics2D g2D, Vector2 position,
             int thickness, boolean isOutline, Color color) {
         g2D.setColor(color);
         int offset = thickness / 2;
 
         if (isOutline) {
-            g2D.drawOval((int) transform.position.x - offset,
-                    (int) transform.position.y - offset,
+            g2D.drawOval((int)position.x - offset,
+                    (int)position.y - offset,
                     thickness, thickness);
         } else {
-            g2D.fillOval((int) transform.position.x - offset,
-                    (int) transform.position.y - offset,
+            g2D.fillOval((int)position.x - offset,
+                    (int)position.y - offset,
                     thickness, thickness);
         }
     }
 
-    public static void drawPoint(Graphics2D g2D, Transform camera, Transform transform,
+    public static void drawPoint(Graphics2D g2D, Transform camera, Vector2 position,
             int thickness, boolean isOutline, Color color) {
         AffineTransform originalTransform = g2D.getTransform();
         applyTransform(g2D, camera);
-        drawCircle(g2D, camera, transform, thickness, isOutline, color);
+        drawCircle(g2D, position, thickness, isOutline, color);
         resetTransform(g2D, originalTransform);
     }
 
-    public static void drawGUIPoint(Graphics2D g2D, Transform transform,
+    public static void drawGUIPoint(Graphics2D g2D, Vector2 position,
             int thickness, boolean isOutline, Color color) {
         AffineTransform originalTransform = g2D.getTransform();
         if (mode == GraphicMode.GUI) {
-            drawCircle(g2D, null, transform, thickness, isOutline, color);
+            drawCircle(g2D, position, thickness, isOutline, color);
         }
         resetTransform(g2D, originalTransform);
     }
@@ -124,7 +124,7 @@ public class AppGraphics {
 
     // ====================================== LINE ===========================
 
-    private static void drawLineRaw(Graphics2D g2D, Transform camera,
+    private static void drawLineRaw(Graphics2D g2D,
             Vector2 start, Vector2 end, int thickness, Color color) {
         g2D.setColor(color);
         g2D.setStroke(new BasicStroke(thickness));
@@ -136,7 +136,7 @@ public class AppGraphics {
             Vector2 start, Vector2 end, int thickness, Color color) {
         AffineTransform originalTransform = g2D.getTransform();
         applyTransform(g2D, camera);
-        drawLineRaw(g2D, camera, start, end, thickness, color);
+        drawLineRaw(g2D, start, end, thickness, color);
         resetTransform(g2D, originalTransform);
     }
 
@@ -144,7 +144,7 @@ public class AppGraphics {
             Vector2 start, Vector2 end, int thickness, Color color) {
         AffineTransform originalTransform = g2D.getTransform();
         if (mode == GraphicMode.GUI) {
-            drawLineRaw(g2D, null, start, end, thickness, color);
+            drawLineRaw(g2D, start, end, thickness, color);
         }
         resetTransform(g2D, originalTransform);
     }
@@ -153,11 +153,63 @@ public class AppGraphics {
 
     // ====================================== STRING ===========================
 
-    private static void drawString(Graphics2D g2D, Transform camera,
-            Vector2 start, Vector2 end, int thickness, Color color) {
+
+    /**
+     * HorizontalAlignment:<br>
+     *      1 = left<br>
+     *      2 = right<br>
+     *      3 = center
+     *      <br><br>
+     * VerticalAlignment:<br>
+     *      1 = top<br>
+     *      2 = bottom<br>
+     *      3 = center
+     */
+    private static void drawString(Graphics2D g2D, Vector2 position, String text, Color color, int h_alignment, int v_alignment) {
         g2D.setColor(color);
-        g2D.setStroke(new BasicStroke(thickness));
-        g2D.drawLine((int) start.x, (int) start.y, (int) end.x, (int) end.y);
-        g2D.setStroke(new BasicStroke());
+        FontMetrics fm = g2D.getFontMetrics();
+        int textWidth = fm.stringWidth(text);
+        int offsetX = position.getX_int();
+        switch (h_alignment) {
+            case 2:
+                offsetX -=  textWidth;
+                break;
+            case 3:
+                offsetX -= textWidth/2;
+                break;
+        }
+
+        int fontHeight = fm.getHeight();
+        int offsetY = position.getY_int()+fontHeight;
+        switch (v_alignment){
+            case 2:
+                offsetY -= fontHeight;
+                break;
+            case 3:
+                offsetY -= (int) (fontHeight*0.75f); // IDK anymore, fuck this arbitrary number bro
+                break;
+        }
+
+        String[] lines = text.split("\n");
+        for(String line : lines) {
+            g2D.drawString(line, offsetX, offsetY);
+            offsetY += fontHeight;
+        }
     }
+
+    public static void drawText(Graphics2D g2D, Transform camera, Vector2 position, String text, Color color, int h_alignment, int v_alignment) {
+        AffineTransform originalTransform = g2D.getTransform();
+        applyTransform(g2D, camera);
+        drawString(g2D, position, text, color, h_alignment, v_alignment);
+        resetTransform(g2D, originalTransform);
+    }
+
+    public static void drawGUIText(Graphics2D g2D, Vector2 position, String text, Color color, int h_alignment, int v_alignment) {
+        AffineTransform originalTransform = g2D.getTransform();
+        if (mode == GraphicMode.GUI) {
+            drawString(g2D, position, text, color, h_alignment, v_alignment);
+        }
+        resetTransform(g2D, originalTransform);
+    }
+
 }

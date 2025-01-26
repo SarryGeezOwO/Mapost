@@ -2,6 +2,7 @@ package com.sarrygeez.Posts;
 
 import com.sarrygeez.RectComp;
 
+@SuppressWarnings("unused")
 public abstract class Post extends RectComp {
 
     private String author;

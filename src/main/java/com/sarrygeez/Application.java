@@ -48,10 +48,10 @@ public class Application extends JFrame {
             }
         });
 
-        TextPost custom = new TextPost("Aniza", "How to cook", "01-25-2025");
-        custom.transform.setPosition(new Vector2(255, 255));
+        TextPost custom = new TextPost("ZineZeal", "How to cook", "Step 1: Drop an egg\nStep 2: IDk...", "01-25-2025");
+        custom.transform.setPosition(new Vector2(700, 255));
 
-        GRID_MAP_CONTEXT.objects.add(new TextPost("SarryGeez", "Hello, World!", "01-25-2025"));
+        GRID_MAP_CONTEXT.objects.add(new TextPost("SarryGeez", "Hello, World!", "Testing something", "01-25-2025"));
         GRID_MAP_CONTEXT.objects.add(custom);
     }
 

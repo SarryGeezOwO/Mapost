@@ -50,12 +50,19 @@ public class Transform {
         updateBbox();
     }
 
+    public void setScale(Vector2 scale) {
+        this.scale = scale;
+        updateBbox();
+    }
+
     public void setX(int x) {
         position.x = x;
+        updateBbox();
     }
 
     public void setY(int y) {
         position.y = y;
+        updateBbox();
     }
 
 

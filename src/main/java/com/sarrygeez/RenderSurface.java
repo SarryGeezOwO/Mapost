@@ -1,11 +1,9 @@
 package com.sarrygeez;
 
 import com.formdev.flatlaf.fonts.inter.FlatInterFont;
-import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 
 /*
     A very unclear class object, literally breaking every rule of
@@ -19,10 +17,7 @@ public class RenderSurface extends JPanel {
         DOTS, LINES, BOTH
     }
 
-    private final Camera camera = new Camera();
-    private Vector2 lastMousePosition = null;
-    private Vector2 mousePosition = new Vector2(); // based actually on this component
-    private boolean isPanning = false;
+    public final Camera camera = new Camera();
 
     public static Color guideLineColor = Color.decode("#25252F");
     public static int guideLineColorAlpha = 50;
@@ -33,7 +28,7 @@ public class RenderSurface extends JPanel {
         setDoubleBuffered(true);
         setBackground(new Color(80, 80, 95));
 
-        MouseActivities mouseActivities = new MouseActivities();
+        RenderSurfaceMouseActivities mouseActivities = new RenderSurfaceMouseActivities(this);
         addMouseListener(mouseActivities);
         addMouseMotionListener(mouseActivities);
         addMouseWheelListener(mouseActivities);
@@ -53,6 +48,10 @@ public class RenderSurface extends JPanel {
         AppGraphics.drawLine(g2D, camera, new Vector2(-100000,       0), new Vector2(100000,    0), 1,  midLineCol); // Horizontal
         AppGraphics.drawLine(g2D, camera, new Vector2(0,       -100000), new Vector2(0,     100000), 1, midLineCol); // Vertical
 
+        g2D.setFont(new Font(FlatInterFont.FAMILY, Font.PLAIN, 20));
+        AppGraphics.drawText(g2D, camera, new Vector2(0, -300), "Welcome to Mapost!", midLineCol, 3, 3);
+        resetG2DFont(g2D);
+
         for(RectComp rect : Application.GRID_MAP_CONTEXT.objects) {
             rect.update();
             rect.draw(g2D, camera);
@@ -60,7 +59,6 @@ public class RenderSurface extends JPanel {
 
         AppGraphics.useGUI(); // ============== GUI BASED RENDERS
         g2D.setColor(Color.BLACK);
-        g2D.drawString("Mouse(Component) pos:   " + mousePosition.toString(), 10, getHeight() - 72);
         g2D.drawString("Mouse(Grid) pos:   " + GridMapContext.MOUSE_POSITION.toString(), 10, getHeight() - 52);
         g2D.drawString("Mouse(Camera) pos:   " + Camera.MOUSE_CAM_POS.toString(), 10, getHeight() - 32);
         g2D.drawString("camera pos:          " + camera.getCartesianPosition().toString(), 10, getHeight() - 12);
@@ -69,6 +67,10 @@ public class RenderSurface extends JPanel {
 
     public Camera getCamera() {
         return camera;
+    }
+
+    public void resetG2DFont(Graphics2D g2d) {
+        g2d.setFont(new Font(FlatInterFont.FAMILY, Font.PLAIN, 14));
     }
 
 
@@ -121,174 +123,5 @@ public class RenderSurface extends JPanel {
         for (int y = startY; y < height; y += cellSize) {
             g2d.drawLine(0, y, width, y);
         }
-    }
-
-
-    // ==========================================================================================
-    // ==========================================================================================
-
-    private class MouseActivities implements MouseListener, MouseMotionListener, MouseWheelListener {
-        @Override
-        public void mousePressed(MouseEvent e) {
-            if (e.getButton() == 1) {
-                isPanning = true;
-                lastMousePosition = new Vector2(e.getX(), e.getY());
-            }
-        }
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            if (e.getButton() != 3) { // Check for a right click
-                return;
-            }
-
-            boolean flag = onRightClick();
-            if (!flag) {
-                // open context menu
-                Vector2 screenPos = mousePosition;
-
-                JPopupMenu menu = new JPopupMenu();
-                menu.setLayout(new MigLayout("FillX, FlowY, insets 0, gap 5"));
-                menu.add(gotoAction(e.getComponent()), "span, grow");
-                menu.add(changeGuidelineAction(e.getComponent()), "span, grow");
-
-                menu.show(e.getComponent(),screenPos.getX_int(), screenPos.getY_int());
-            }
-
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            if (e.getButton() == 1) {
-                isPanning = false;
-                lastMousePosition = null;
-            }
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {}
-
-        @Override
-        public void mouseExited(MouseEvent e) {}
-
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            GridMapContext.MOUSE_POSITION.x = e.getXOnScreen();
-            GridMapContext.MOUSE_POSITION.y = e.getYOnScreen();
-            camera.updateCameraMousePosition(new Vector2(e.getX(), e.getY()));
-
-            if (isPanning && lastMousePosition != null) {
-                mousePosition = new Vector2(e.getX(), e.getY());
-                Vector2 dir = new Vector2(
-                        mousePosition.x - lastMousePosition.x,
-                        mousePosition.y - lastMousePosition.y
-                );
-
-                camera.position.x -= dir.x * camera.panSpeed / camera.scale.x;
-                camera.position.y -= dir.y * (camera.panSpeed/2) / camera.scale.y;
-                lastMousePosition = mousePosition;
-
-            }
-            repaint();
-        }
-
-        @Override
-        public void mouseMoved(MouseEvent e) {
-            mousePosition.x = e.getX();
-            mousePosition.y = e.getY();
-            GridMapContext.MOUSE_POSITION.x = e.getXOnScreen();
-            GridMapContext.MOUSE_POSITION.y = e.getYOnScreen();
-            camera.updateCameraMousePosition(mousePosition);
-            repaint();
-        }
-
-        @Override
-        public void mouseWheelMoved(MouseWheelEvent e) {
-            System.out.println(e.getPreciseWheelRotation());
-        }
-    }
-
-
-    // ==========================================================================================
-    // ==========================================================================================
-
-    /**
-     * @return <code>true</code> if a rect has been interacted with.
-     *          <code>false</code> otherwise
-     */
-    public boolean onRightClick() {
-        for(RectComp rect : Application.GRID_MAP_CONTEXT.objects) {
-
-            if (rect.positionInsideBbox(Camera.MOUSE_CAM_POS))
-            {
-                System.out.println("Rect detected");
-                new InspectorView(rect, this, mousePosition);
-                return true;
-            }
-
-        }
-
-        return false;
-    }
-
-
-    private JMenuItem gotoAction(Component invoker) {
-        JMenuItem item = new JMenuItem("Go to");
-        item.addActionListener(e -> {
-            JPopupMenu whereInput = new JPopupMenu();
-            whereInput.setLayout(new MigLayout("insets 10, gap 10"));
-
-            JSpinner xNum = new JSpinner();
-            JSpinner yNum = new JSpinner();
-
-            JButton confirm = new JButton("confirm");
-            confirm.addActionListener(e1 -> {
-                Vector2 pos = new Vector2(
-                        (int)xNum.getValue(),
-                        (int)yNum.getValue()
-                );
-                gotoConfirm(pos, whereInput);
-            });
-
-            whereInput.add(new JLabel("X: "));
-            whereInput.add(xNum, "wrap, grow, width 120:120:120");
-
-            whereInput.add(new JLabel("Y: "));
-            whereInput.add(yNum, "wrap, grow, width 120:120:120");
-            whereInput.add(confirm, "span, grow");
-            whereInput.show(invoker, mousePosition.getX_int(), mousePosition.getY_int());
-        });
-
-        return item;
-    }
-
-    private void gotoConfirm(Vector2 pos, JPopupMenu caller) {
-        Vector2 coord = Application.toCartesianCoordinate(pos);
-
-        camera.setPosition(coord);
-        revalidate();
-        repaint();
-
-        caller.setVisible(false);
-    }
-
-
-    private JMenuItem changeGuidelineAction(Component invoker) {
-        JMenuItem change = new JMenuItem("Change Guideline");
-        change.addActionListener(e -> {
-            JPopupMenu menu = new JPopupMenu();
-            menu.setLayout(new MigLayout("FillX, FlowY"));
-            for(GuidelineType type : GuidelineType.values()) {
-                JButton btn = new JButton(type.name().toLowerCase());
-                btn.addActionListener(e1 -> {
-                    guidelineType = type;
-                    repaint();
-                });
-
-                menu.add(btn, "span, grow");
-            }
-            menu.show(invoker, mousePosition.getX_int(), mousePosition.getY_int());
-        });
-        return change;
     }
 }
