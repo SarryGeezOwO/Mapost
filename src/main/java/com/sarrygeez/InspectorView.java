@@ -8,7 +8,6 @@ import java.awt.*;
 public class InspectorView extends JPopupMenu {
 
     public InspectorView(RectComp rect, Component invoker, Vector2 position) {
-        setPopupSize(250, 400);
         setLayout(new MigLayout("fillX, flowY"));
         setLocation(GridMapContext.getMouseX_int(), GridMapContext.getMouseY_int());
 
