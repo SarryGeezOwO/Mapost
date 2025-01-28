@@ -106,7 +106,12 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        System.out.println(e.getPreciseWheelRotation());
+       camera.setZoom(roundToOneDecimal(camera.getZoom() + (-e.getWheelRotation() * 0.1f)));
+       repaint();
+    }
+
+    private float roundToOneDecimal(float value) {
+        return Math.round((value * 10)) / 10f;
     }
 
 

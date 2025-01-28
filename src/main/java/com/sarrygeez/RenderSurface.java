@@ -60,9 +60,11 @@ public class RenderSurface extends JPanel {
         }
 
         AppGraphics.useGUI(); // ============== GUI BASED RENDERS
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 52), "Mouse(Grid) pos:   " + GridMapContext.MOUSE_POSITION.toString());
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 32), "Mouse(Camera) pos: " + Camera.MOUSE_CAM_POS.toString());
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 12), "camera pos:        " + camera.getCartesianPosition().toString());
+        g2D.setColor(Color.YELLOW);
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 72), "Mouse(Grid) pos:   " + GridMapContext.MOUSE_POSITION.toString());
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 52), "Mouse(Camera) pos: " + Camera.MOUSE_CAM_POS.toString());
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 32), "camera pos:        " + camera.getCartesianPosition().toString());
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 12), "Camera Zoom:       " + camera.getZoom());
         g2D.dispose();
     }
 

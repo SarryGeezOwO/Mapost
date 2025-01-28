@@ -39,6 +39,10 @@ public class Camera extends Transform {
         this.zoom = zoom;
     }
 
+    public float getZoom() {
+        return zoom;
+    }
+
     public static float getMouseX() {
         return MOUSE_CAM_POS.x;
     }
