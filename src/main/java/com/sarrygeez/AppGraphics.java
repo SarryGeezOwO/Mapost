@@ -41,9 +41,19 @@ public class AppGraphics {
     // ====================================== PRIVATE FUNCTIONS ===========================
 
     private static void applyTransform(Transform camera) {
+        // keep track of scale T-T
+        float gcScale = (float) gContext.getTransform().getScaleX();
+
+        gContext.setTransform(new AffineTransform());
         if (mode == GraphicMode.CAMERA) {
             gContext.translate(-camera.position.x, -camera.position.y);
         }
+        else {
+            // GUI mode
+            gcScale = 1;
+        }
+
+        gContext.scale(gcScale, gcScale); // so sigma bro, kill me
     }
 
     private static void resetTransform( AffineTransform originalTransform) {

@@ -12,8 +12,8 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
     private final Camera camera;
 
     private Vector2 lastMousePosition = null;
-    private Vector2 mousePosition = new Vector2(); // based actually on this component
-    private boolean isPanning = false;
+    public Vector2 mousePosition = new Vector2(); // based actually on this component
+    public boolean isPanning = false;
 
     public RenderSurfaceMouseActivities(RenderSurface surface) {
         this.surface = surface;
@@ -106,8 +106,14 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-       camera.setZoom(roundToOneDecimal(camera.getZoom() + (-e.getWheelRotation() * 0.1f)));
-       repaint();
+        float zoom = camera.getZoom();
+        float add = -e.getWheelRotation() * 0.1f;
+
+        if (zoom+add >= 0.5f && zoom+add <= 2) {
+            camera.setZoom(roundToOneDecimal(zoom + add));
+            camera.updateCameraMousePosition(mousePosition);
+        }
+        repaint();
     }
 
     private float roundToOneDecimal(float value) {

@@ -23,16 +23,20 @@ public class RenderSurface extends JPanel {
     public static int guideLineColorAlpha = 50;
     public static GuidelineType guidelineType = GuidelineType.DOTS;
 
+    public static int WIDTH = 0;
+    public static int HEIGHT = 0;
+
+    private final RenderSurfaceMouseActivities mouseActivities = new RenderSurfaceMouseActivities(this);
     public RenderSurface() {
 
         setDoubleBuffered(true);
         setBackground(new Color(80, 80, 95));
 
-        RenderSurfaceMouseActivities mouseActivities = new RenderSurfaceMouseActivities(this);
         addMouseListener(mouseActivities);
         addMouseMotionListener(mouseActivities);
         addMouseWheelListener(mouseActivities);
-
+        WIDTH = getWidth();
+        HEIGHT = getHeight();
     }
 
     @Override
@@ -42,6 +46,9 @@ public class RenderSurface extends JPanel {
         g2D.setFont(new Font(FlatInterFont.FAMILY, Font.PLAIN, 14));
         g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         drawGridGuidelines(g2D, guidelineType);
+
+        //Apply zoom scale
+        g2D.scale(camera.getZoom(), camera.getZoom());
 
         AppGraphics.setGContext(g2D); // Update Graphical context
         AppGraphics.useCamera(); // ========= CAMERA BASED RENDER
@@ -61,10 +68,11 @@ public class RenderSurface extends JPanel {
 
         AppGraphics.useGUI(); // ============== GUI BASED RENDERS
         g2D.setColor(Color.YELLOW);
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 72), "Mouse(Grid) pos:   " + GridMapContext.MOUSE_POSITION.toString());
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 52), "Mouse(Camera) pos: " + Camera.MOUSE_CAM_POS.toString());
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 32), "camera pos:        " + camera.getCartesianPosition().toString());
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 12), "Camera Zoom:       " + camera.getZoom());
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 92), "Mouse(Grid) pos:      " + GridMapContext.MOUSE_POSITION.toString());
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 72), "Mouse(Camera) pos:    " + Camera.MOUSE_CAM_POS.toString());
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 52), "Mouse(Component) pos: " + mouseActivities.mousePosition.toString());
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 32), "camera pos:           " + camera.getCartesianPosition().toString());
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 12), "Camera Zoom:          " + camera.getZoom());
         g2D.dispose();
     }
 

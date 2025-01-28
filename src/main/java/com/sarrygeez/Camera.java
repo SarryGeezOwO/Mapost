@@ -20,8 +20,11 @@ public class Camera extends Transform {
     }
 
     public void updateCameraMousePosition(Vector2 basePos) {
-        Camera.MOUSE_CAM_POS.x = basePos.getX_int() + position.x;
-        Camera.MOUSE_CAM_POS.y = basePos.getY_int() + position.y;
+        float adjustedX = (basePos.x + position.x) / zoom;
+        float adjustedY = (basePos.y + position.y) / zoom;
+
+        Camera.MOUSE_CAM_POS.x = adjustedX;
+        Camera.MOUSE_CAM_POS.y = adjustedY;
     }
 
     /**
