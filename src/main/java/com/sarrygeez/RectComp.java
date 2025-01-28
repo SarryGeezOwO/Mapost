@@ -52,7 +52,7 @@ public class RectComp {
 
     public void draw(Graphics2D g2d, Camera camera) {
         // override this
-        AppGraphics.drawRect(g2d, camera, transform, radius, borderWidth, background, borderColor);
+        AppGraphics.drawRect(camera, transform, radius, borderWidth, background, borderColor);
     }
 
     public void addMouseActionListener(MouseActionAdapter adapter) {

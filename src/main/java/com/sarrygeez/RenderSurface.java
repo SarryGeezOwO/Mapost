@@ -43,13 +43,15 @@ public class RenderSurface extends JPanel {
         g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         drawGridGuidelines(g2D, guidelineType);
 
-        AppGraphics.useCamera(); // ========= CAMERA BASED RENDERS
+        AppGraphics.setGContext(g2D); // Update Graphical context
+        AppGraphics.useCamera(); // ========= CAMERA BASED RENDER
+
         Color midLineCol = Color.decode("#25252F");
-        AppGraphics.drawLine(g2D, camera, new Vector2(-100000,       0), new Vector2(100000,    0), 1,  midLineCol); // Horizontal
-        AppGraphics.drawLine(g2D, camera, new Vector2(0,       -100000), new Vector2(0,     100000), 1, midLineCol); // Vertical
+        AppGraphics.drawLine(camera, new Vector2(-100000,       0), new Vector2(100000,    0), 1,  midLineCol); // Horizontal
+        AppGraphics.drawLine(camera, new Vector2(0,       -100000), new Vector2(0,     100000), 1, midLineCol); // Vertical
 
         g2D.setFont(new Font(FlatInterFont.FAMILY, Font.PLAIN, 20));
-        AppGraphics.drawText(g2D, camera, new Vector2(0, -300), "Welcome to Mapost!", midLineCol, 3, 3);
+        AppGraphics.drawTextExt(camera, new Vector2(0, -300), "Welcome to Mapost!", midLineCol, 3, 3);
         resetG2DFont(g2D);
 
         for(RectComp rect : Application.GRID_MAP_CONTEXT.objects) {
@@ -58,10 +60,9 @@ public class RenderSurface extends JPanel {
         }
 
         AppGraphics.useGUI(); // ============== GUI BASED RENDERS
-        g2D.setColor(Color.BLACK);
-        g2D.drawString("Mouse(Grid) pos:   " + GridMapContext.MOUSE_POSITION.toString(), 10, getHeight() - 52);
-        g2D.drawString("Mouse(Camera) pos:   " + Camera.MOUSE_CAM_POS.toString(), 10, getHeight() - 32);
-        g2D.drawString("camera pos:          " + camera.getCartesianPosition().toString(), 10, getHeight() - 12);
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 52), "Mouse(Grid) pos:   " + GridMapContext.MOUSE_POSITION.toString());
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 32), "Mouse(Camera) pos: " + Camera.MOUSE_CAM_POS.toString());
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 12), "camera pos:        " + camera.getCartesianPosition().toString());
         g2D.dispose();
     }
 
