@@ -1,6 +1,10 @@
 package com.sarrygeez;
 
 import com.formdev.flatlaf.fonts.inter.FlatInterFont;
+import com.sarrygeez.Actions.Action;
+import com.sarrygeez.Actions.ActionManager;
+import com.sarrygeez.Debug.Debug;
+import com.sarrygeez.Debug.LogLevel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,6 +22,7 @@ public class RenderSurface extends JPanel {
     }
 
     public final Camera camera = new Camera();
+    public final ActionManager actionManager = new ActionManager();
 
     public static Color guideLineColor = Color.decode("#25252F");
     public static int guideLineColorAlpha = 50;
@@ -45,6 +50,9 @@ public class RenderSurface extends JPanel {
         Graphics2D g2D = (Graphics2D)g.create();
         g2D.setFont(new Font(FlatInterFont.FAMILY, Font.PLAIN, 14));
         g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        update();
+
+        // Guidelines duh...
         drawGridGuidelines(g2D, guidelineType);
 
         //Apply zoom scale
@@ -82,6 +90,16 @@ public class RenderSurface extends JPanel {
 
     public void resetG2DFont(Graphics2D g2d) {
         g2d.setFont(new Font(FlatInterFont.FAMILY, Font.PLAIN, 14));
+    }
+
+    private void update() {
+        // Logical updates
+
+        // Flush out 1 action per draw call
+        if (!actionManager.getActionQueue().isEmpty()) {
+            Action act = actionManager.triggerAction();
+            Debug.log("Action Triggered: " + act.name(), LogLevel.SUCCESS);
+        }
     }
 
 

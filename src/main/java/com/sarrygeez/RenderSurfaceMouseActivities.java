@@ -1,5 +1,7 @@
 package com.sarrygeez;
 
+import com.sarrygeez.Actions.Goto;
+import com.sarrygeez.Actions.SpawnPost;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -51,7 +53,8 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
 
             JPopupMenu menu = new JPopupMenu();
             menu.setLayout(new MigLayout("FillX, FlowY, insets 0, gap 5"));
-            menu.add(gotoAction(e.getComponent()), "span, grow");
+            menu.add(gotoActionGUI(e.getComponent()), "span, grow");
+            menu.add(spawnPostGUI(e.getComponent()), "span, grow");
             menu.add(changeGuidelineAction(e.getComponent()), "span, grow");
 
             menu.show(e.getComponent(),screenPos.getX_int(), screenPos.getY_int());
@@ -144,7 +147,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
     }
 
 
-    private JMenuItem gotoAction(Component invoker) {
+    private JMenuItem gotoActionGUI(Component invoker) {
         JMenuItem item = new JMenuItem("Go to");
         item.addActionListener(e -> {
             JPopupMenu whereInput = new JPopupMenu();
@@ -159,7 +162,8 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
                         (int)xNum.getValue(),
                         (int)yNum.getValue()
                 );
-                gotoConfirm(pos, whereInput);
+                surface.actionManager.addAction(new Goto(camera, pos));
+                whereInput.setVisible(false);
             });
 
             whereInput.add(new JLabel("X: "));
@@ -174,17 +178,42 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
         return item;
     }
 
-    private void gotoConfirm(Vector2 pos, JPopupMenu caller) {
-        Vector2 coord = Application.toCartesianCoordinate(pos);
+    // 💀💀💀 too lazy
+    private JMenuItem spawnPostGUI(Component invoker) {
+        JMenuItem item = new JMenuItem("Create Post");
+        item.addActionListener(e -> {
+            JPopupMenu whereInput = new JPopupMenu();
+            whereInput.setLayout(new MigLayout("insets 10, FillX, gap 10"));
 
-        camera.setPosition(coord);
-        revalidate();
-        repaint();
+            JSpinner xNum = new JSpinner();
+            JSpinner yNum = new JSpinner();
 
-        caller.setVisible(false);
+            JTextArea message = new JTextArea();
+            message.setLineWrap(true);
+            message.setWrapStyleWord(true);
+
+            JButton confirm = new JButton("Create");
+            confirm.addActionListener(e1 -> {
+                Vector2 pos = new Vector2(
+                        (int)xNum.getValue(),
+                        (int)yNum.getValue()
+                );
+                surface.actionManager.addAction(new SpawnPost(pos, message.getText()));
+                whereInput.setVisible(false);
+            });
+
+            whereInput.add(xNum, "grow, width 120:120:120");
+            whereInput.add(yNum, "wrap, grow, width 120:120:120");
+            whereInput.add(message, "wrap, span, grow, height 170:170:170");
+            whereInput.add(confirm, "span, grow");
+            whereInput.show(invoker, mousePosition.getX_int(), mousePosition.getY_int());
+        });
+
+        return item;
     }
 
 
+    // this is for testing shit purposes, this is going to be a setting configuration
     private JMenuItem changeGuidelineAction(Component invoker) {
         JMenuItem change = new JMenuItem("Change Guideline");
         change.addActionListener(e -> {
