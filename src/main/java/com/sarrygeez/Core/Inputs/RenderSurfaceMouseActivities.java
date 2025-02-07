@@ -7,6 +7,8 @@ import com.sarrygeez.Core.Rendering.Camera;
 import com.sarrygeez.Core.Rendering.GridMapContext;
 import com.sarrygeez.Core.Rendering.RenderSurface;
 import com.sarrygeez.Data.Vector2;
+import com.sarrygeez.Debug.Debug;
+import com.sarrygeez.Debug.LogLevel;
 import com.sarrygeez.Tools.MathUtils;
 import net.miginfocom.swing.MigLayout;
 
@@ -36,7 +38,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
     @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == 1) {
-            if (getkeyInput().isActivated(KeyEvent.VK_SHIFT)) {
+            if (getKeyInput().isActivated(KeyEvent.VK_SHIFT)) {
                 surface.isSelectionActive = true;
 
                 if (surface.selectionStart == null) {
@@ -77,9 +79,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
         if (e.getButton() == 1) {
             isPanning = false;
             lastMousePosition = null;
-
-            surface.isSelectionActive = false;
-            surface.selectionStart = null;
+            exitSelection();
         }
     }
 
@@ -96,7 +96,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
         GridMapContext.MOUSE_POSITION.y = e.getYOnScreen();
         camera.updateCameraMousePosition(new Vector2(e.getX(), e.getY()));
 
-        if (getkeyInput().isActivated(KeyEvent.VK_SHIFT)
+        if (getKeyInput().isActivated(KeyEvent.VK_SHIFT)
                 && surface.isSelectionActive && surface.selectionStart != null) {
             surface.selectionEnd = Camera.MOUSE_CAM_POS;
             repaint();
@@ -104,10 +104,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
         }
 
         // Disable selection on shift exit
-        if (surface.isSelectionActive) {
-            surface.isSelectionActive = false;
-            surface.selectionStart = null;
-        }
+        exitSelection();
 
 
         if (isPanning && lastMousePosition != null) {
@@ -148,7 +145,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
         return Math.round((value * 10)) / 10f;
     }
 
-    private RenderSurfaceKeyInputs getkeyInput() {
+    private RenderSurfaceKeyInputs getKeyInput() {
         return surface.getKeyInputs();
     }
 
@@ -175,6 +172,15 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
         }
 
         return false;
+    }
+
+    private void exitSelection() {
+        if (!surface.isSelectionActive) {
+            return;
+        }
+        surface.isSelectionActive = false;
+        surface.selectionStart = null;
+        Debug.log("Exited Selection" , LogLevel.OK);
     }
 
 

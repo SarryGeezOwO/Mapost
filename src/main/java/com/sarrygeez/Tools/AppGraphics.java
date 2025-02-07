@@ -98,11 +98,12 @@ public class AppGraphics {
         AffineTransform originalTransform = gContext.getTransform();
         applyTransform(camera);
 
-        Vector2 dimension = MathUtils.getVector(start, end);
+        Vector2 dimension = MathUtils.abs(MathUtils.getVector(start, end));
+        Vector2 anchor = MathUtils.min(start, end);
         if (fillBody) {
             gContext.setColor(bodyColor);
             gContext.fillRect(
-                    start.getX_int(), start.getY_int(),
+                    anchor.getX_int(), anchor.getY_int(),
                     dimension.getX_int(), dimension.getY_int()
             );
         }
@@ -111,7 +112,7 @@ public class AppGraphics {
         gContext.setColor(borderColor);
         gContext.setStroke(new BasicStroke(thickness));
         gContext.drawRect(
-                start.getX_int(), start.getY_int(),
+                anchor.getX_int(), anchor.getY_int(),
                 dimension.getX_int(), dimension.getY_int()
         );
 

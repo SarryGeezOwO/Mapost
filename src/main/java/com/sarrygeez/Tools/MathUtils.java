@@ -62,4 +62,38 @@ public class MathUtils {
         return getMagnitude(vec);
     }
 
+
+    /**
+     * Returns a new Vector2 containing the minimum x and y values
+     * from the two provided vectors.
+     *
+     * @param a the first vector
+     * @param b the second vector
+     * @return a Vector2 with the minimum x and y from a and b
+     */
+    public static Vector2 min(Vector2 a, Vector2 b) {
+        float minX = Math.min(a.x, b.x);
+        float minY = Math.min(a.y, b.y);
+        return new Vector2(minX, minY);
+    }
+
+    /**
+     * Returns a new Vector2 containing the maximum x and y values
+     * from the two provided vectors.
+     *
+     * @param a the first vector
+     * @param b the second vector
+     * @return a Vector2 with the maximum x and y from a and b
+     */
+    public static Vector2 max(Vector2 a, Vector2 b) {
+        float maxX = Math.max(a.x, b.x);
+        float maxY = Math.max(a.y, b.y);
+        return new Vector2(maxX, maxY);
+    }
+
+
+    public static Vector2 abs(Vector2 vec) {
+        return new Vector2(Math.abs(vec.x), Math.abs(vec.y));
+    }
+
 }

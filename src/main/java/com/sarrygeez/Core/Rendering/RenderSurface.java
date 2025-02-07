@@ -93,7 +93,7 @@ public class RenderSurface extends JPanel {
         }
         AppGraphics.drawRect(
                 camera, start, end, 2, true,
-                new Color(162, 84, 222, 50), Color.decode("#862bcc"));
+                new Color(162, 84, 222, 70), Color.decode("#862bcc"));
     }
 
     private void drawCartesianLines() {
