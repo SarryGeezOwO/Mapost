@@ -1,4 +1,4 @@
-package com.sarrygeez;
+package com.sarrygeez.Tools;
 
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatAnimatedLafChange;

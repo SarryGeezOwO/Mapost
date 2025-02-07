@@ -1,4 +1,4 @@
-package com.sarrygeez.Actions;
+package com.sarrygeez.Core.Actions;
 
 public interface Action {
 

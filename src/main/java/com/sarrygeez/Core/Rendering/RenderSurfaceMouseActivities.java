@@ -1,7 +1,11 @@
-package com.sarrygeez;
+package com.sarrygeez.Core.Rendering;
 
-import com.sarrygeez.Actions.Goto;
-import com.sarrygeez.Actions.SpawnPost;
+import com.sarrygeez.*;
+import com.sarrygeez.Core.Actions.Goto;
+import com.sarrygeez.Core.Actions.SpawnPost;
+import com.sarrygeez.Core.Camera;
+import com.sarrygeez.Core.GridMapContext;
+import com.sarrygeez.Data.Vector2;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -25,11 +29,6 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
     private void repaint() {
         surface.repaint();
     }
-
-    private void revalidate() {
-        surface.revalidate();
-    }
-
 
 
     @Override
@@ -132,7 +131,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
      *          <code>false</code> otherwise
      */
     public boolean onRightClick() {
-        for(RectComp rect : Application.GRID_MAP_CONTEXT.objects) {
+        for(RectComponent rect : Application.GRID_MAP_CONTEXT.objects) {
 
             if (rect.positionInsideBbox(Camera.MOUSE_CAM_POS))
             {
@@ -160,7 +159,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
             confirm.addActionListener(e1 -> {
                 Vector2 pos = new Vector2(
                         (int)xNum.getValue(),
-                        (int)yNum.getValue()
+                        -(int)yNum.getValue()
                 );
                 surface.actionManager.addAction(new Goto(camera, pos));
                 whereInput.setVisible(false);
@@ -187,6 +186,9 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
 
             JSpinner xNum = new JSpinner();
             JSpinner yNum = new JSpinner();
+            Vector2 camPos = Camera.MOUSE_CAM_POS;
+            xNum.setValue(camPos.getX_int());
+            yNum.setValue(-camPos.getY_int());
 
             JTextArea message = new JTextArea();
             message.setLineWrap(true);
@@ -196,7 +198,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
             confirm.addActionListener(e1 -> {
                 Vector2 pos = new Vector2(
                         (int)xNum.getValue(),
-                        (int)yNum.getValue()
+                        -(int)yNum.getValue()
                 );
                 surface.actionManager.addAction(new SpawnPost(pos, message.getText()));
                 whereInput.setVisible(false);

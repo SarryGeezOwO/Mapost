@@ -1,4 +1,7 @@
-package com.sarrygeez;
+package com.sarrygeez.Tools;
+
+import com.sarrygeez.Data.Transform;
+import com.sarrygeez.Data.Vector2;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;

@@ -1,4 +1,4 @@
-package com.sarrygeez;
+package com.sarrygeez.Core.Rendering;
 
 public abstract class MouseActionAdapter {
 

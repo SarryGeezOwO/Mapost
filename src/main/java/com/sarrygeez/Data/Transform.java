@@ -1,4 +1,6 @@
-package com.sarrygeez;
+package com.sarrygeez.Data;
+
+import com.sarrygeez.Core.GridMapContext;
 
 @SuppressWarnings("unused")
 public class Transform {

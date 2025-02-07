@@ -1,8 +1,8 @@
-package com.sarrygeez.Actions;
+package com.sarrygeez.Core.Actions;
 
 import com.sarrygeez.Application;
 import com.sarrygeez.Posts.TextPost;
-import com.sarrygeez.Vector2;
+import com.sarrygeez.Data.Vector2;
 
 public class SpawnPost implements Action{
 

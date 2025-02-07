@@ -1,4 +1,4 @@
-package com.sarrygeez;
+package com.sarrygeez.Data;
 
 @SuppressWarnings("unused")
 public class Vector2 {

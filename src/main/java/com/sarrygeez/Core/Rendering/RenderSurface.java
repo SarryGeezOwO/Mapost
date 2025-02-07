@@ -1,10 +1,15 @@
-package com.sarrygeez;
+package com.sarrygeez.Core.Rendering;
 
 import com.formdev.flatlaf.fonts.inter.FlatInterFont;
-import com.sarrygeez.Actions.Action;
-import com.sarrygeez.Actions.ActionManager;
+import com.sarrygeez.*;
+import com.sarrygeez.Core.Actions.Action;
+import com.sarrygeez.Core.Actions.ActionManager;
+import com.sarrygeez.Core.Camera;
+import com.sarrygeez.Core.GridMapContext;
+import com.sarrygeez.Data.Vector2;
 import com.sarrygeez.Debug.Debug;
 import com.sarrygeez.Debug.LogLevel;
+import com.sarrygeez.Tools.AppGraphics;
 
 import javax.swing.*;
 import java.awt.*;
@@ -69,7 +74,7 @@ public class RenderSurface extends JPanel {
         AppGraphics.drawTextExt(camera, new Vector2(0, -300), "Welcome to Mapost!", midLineCol, 3, 3);
         resetG2DFont(g2D);
 
-        for(RectComp rect : Application.GRID_MAP_CONTEXT.objects) {
+        for(RectComponent rect : Application.GRID_MAP_CONTEXT.objects) {
             rect.update();
             rect.draw(g2D, camera);
         }

@@ -1,4 +1,8 @@
-package com.sarrygeez;
+package com.sarrygeez.Core;
+
+import com.sarrygeez.Application;
+import com.sarrygeez.Data.Transform;
+import com.sarrygeez.Data.Vector2;
 
 public class Camera extends Transform {
 

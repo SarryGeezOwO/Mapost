@@ -1,9 +1,9 @@
 package com.sarrygeez.Posts;
 
-import com.sarrygeez.RectComp;
+import com.sarrygeez.RectComponent;
 
 @SuppressWarnings("unused")
-public abstract class Post extends RectComp {
+public abstract class Post extends RectComponent {
 
     private String author;
     private String title;
