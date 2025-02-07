@@ -1,10 +1,11 @@
-package com.sarrygeez.Core.Rendering;
+package com.sarrygeez.Core.Inputs;
 
 import com.sarrygeez.*;
 import com.sarrygeez.Core.Actions.Goto;
 import com.sarrygeez.Core.Actions.SpawnPost;
-import com.sarrygeez.Core.Camera;
-import com.sarrygeez.Core.GridMapContext;
+import com.sarrygeez.Core.Rendering.Camera;
+import com.sarrygeez.Core.Rendering.GridMapContext;
+import com.sarrygeez.Core.Rendering.RenderSurface;
 import com.sarrygeez.Data.Vector2;
 import net.miginfocom.swing.MigLayout;
 

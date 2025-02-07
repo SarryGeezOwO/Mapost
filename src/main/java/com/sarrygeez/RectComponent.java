@@ -1,9 +1,9 @@
 package com.sarrygeez;
 
-import com.sarrygeez.Core.Camera;
+import com.sarrygeez.Core.Rendering.Camera;
 import com.sarrygeez.Data.Transform;
 import com.sarrygeez.Data.Vector2;
-import com.sarrygeez.Core.Rendering.MouseActionAdapter;
+import com.sarrygeez.Core.Inputs.MouseActionAdapter;
 import com.sarrygeez.Tools.AppGraphics;
 
 import java.awt.*;

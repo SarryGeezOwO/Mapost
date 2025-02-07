@@ -2,7 +2,7 @@ package com.sarrygeez.Posts;
 
 import com.formdev.flatlaf.fonts.inter.FlatInterFont;
 import com.sarrygeez.Tools.AppGraphics;
-import com.sarrygeez.Core.Camera;
+import com.sarrygeez.Core.Rendering.Camera;
 import com.sarrygeez.Data.Transform;
 import com.sarrygeez.Data.Vector2;
 

@@ -1,4 +1,4 @@
-package com.sarrygeez.Core;
+package com.sarrygeez.Core.Rendering;
 
 import com.sarrygeez.Data.Vector2;
 import com.sarrygeez.RectComponent;

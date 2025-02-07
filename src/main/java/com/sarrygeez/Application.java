@@ -4,7 +4,7 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.fonts.inter.FlatInterFont;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
-import com.sarrygeez.Core.GridMapContext;
+import com.sarrygeez.Core.Rendering.GridMapContext;
 import com.sarrygeez.Data.Vector2;
 import com.sarrygeez.Posts.TextPost;
 import com.sarrygeez.Core.Rendering.RenderSurface;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class Application extends JFrame {
 
-    protected static ArrayList<FlatSVGIcon> icons = new ArrayList<>();
+    public static ArrayList<FlatSVGIcon> icons = new ArrayList<>();
     public static final String WINDOW_TITLE = "Mapost";
     public static final String APP_VERSION = "1.0.0";
     public static int WINDOW_WIDTH = 1400;

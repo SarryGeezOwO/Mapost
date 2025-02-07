@@ -4,8 +4,8 @@ import com.formdev.flatlaf.fonts.inter.FlatInterFont;
 import com.sarrygeez.*;
 import com.sarrygeez.Core.Actions.Action;
 import com.sarrygeez.Core.Actions.ActionManager;
-import com.sarrygeez.Core.Camera;
-import com.sarrygeez.Core.GridMapContext;
+import com.sarrygeez.Core.Inputs.RenderSurfaceKeyInputs;
+import com.sarrygeez.Core.Inputs.RenderSurfaceMouseActivities;
 import com.sarrygeez.Data.Vector2;
 import com.sarrygeez.Debug.Debug;
 import com.sarrygeez.Debug.LogLevel;
@@ -37,6 +37,8 @@ public class RenderSurface extends JPanel {
     public static int HEIGHT = 0;
 
     private final RenderSurfaceMouseActivities mouseActivities = new RenderSurfaceMouseActivities(this);
+    private final RenderSurfaceKeyInputs keyInputs = new RenderSurfaceKeyInputs();
+
     public RenderSurface() {
 
         setDoubleBuffered(true);
@@ -45,6 +47,8 @@ public class RenderSurface extends JPanel {
         addMouseListener(mouseActivities);
         addMouseMotionListener(mouseActivities);
         addMouseWheelListener(mouseActivities);
+        addKeyListener(keyInputs);
+
         WIDTH = getWidth();
         HEIGHT = getHeight();
     }

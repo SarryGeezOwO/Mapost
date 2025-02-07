@@ -2,7 +2,7 @@ package com.sarrygeez.Core.Actions;
 
 
 import com.sarrygeez.Application;
-import com.sarrygeez.Core.Camera;
+import com.sarrygeez.Core.Rendering.Camera;
 import com.sarrygeez.Data.Vector2;
 
 public class Goto implements Action{

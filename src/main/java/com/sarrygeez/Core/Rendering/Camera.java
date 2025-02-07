@@ -1,4 +1,4 @@
-package com.sarrygeez.Core;
+package com.sarrygeez.Core.Rendering;
 
 import com.sarrygeez.Application;
 import com.sarrygeez.Data.Transform;
