@@ -13,6 +13,7 @@ import com.sarrygeez.Tools.AppGraphics;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 /*
     A very unclear class object, literally breaking every rule of
@@ -36,10 +37,15 @@ public class RenderSurface extends JPanel {
     public static int WIDTH = 0;
     public static int HEIGHT = 0;
 
-    private final RenderSurfaceMouseActivities mouseActivities = new RenderSurfaceMouseActivities(this);
-    private final RenderSurfaceKeyInputs keyInputs = new RenderSurfaceKeyInputs();
+    public boolean isSelectionActive = false;
+    public Vector2 selectionStart = null;
+    public Vector2 selectionEnd = null;
 
-    public RenderSurface() {
+    private final RenderSurfaceMouseActivities mouseActivities = new RenderSurfaceMouseActivities(this);
+    private final RenderSurfaceKeyInputs keyInputs;
+
+    public RenderSurface(RenderSurfaceKeyInputs keyInputs) {
+        this.keyInputs = keyInputs;
 
         setDoubleBuffered(true);
         setBackground(new Color(80, 80, 95));
@@ -47,7 +53,10 @@ public class RenderSurface extends JPanel {
         addMouseListener(mouseActivities);
         addMouseMotionListener(mouseActivities);
         addMouseWheelListener(mouseActivities);
-        addKeyListener(keyInputs);
+        requestFocus();
+
+        // Logical update
+        new Timer(0, e -> update()).start();
 
         WIDTH = getWidth();
         HEIGHT = getHeight();
@@ -59,7 +68,6 @@ public class RenderSurface extends JPanel {
         Graphics2D g2D = (Graphics2D)g.create();
         g2D.setFont(new Font(FlatInterFont.FAMILY, Font.PLAIN, 14));
         g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        update();
 
         // Guidelines duh...
         drawGridGuidelines(g2D, guidelineType);
@@ -70,39 +78,47 @@ public class RenderSurface extends JPanel {
         AppGraphics.setGContext(g2D); // Update Graphical context
         AppGraphics.useCamera(); // ========= CAMERA BASED RENDER
 
+        drawCartesianLines();
+        updateRectComponents(g2D);
+        drawSelection(selectionStart, selectionEnd);
+
+        AppGraphics.useGUI();
+        drawDebugTexts(g2D);
+        g2D.dispose();
+    }
+
+    private void drawSelection(Vector2 start, Vector2 end) {
+        if (!isSelectionActive) {
+            return;
+        }
+        AppGraphics.drawRect(
+                camera, start, end, 2, true,
+                new Color(162, 84, 222, 50), Color.decode("#862bcc"));
+    }
+
+    private void drawCartesianLines() {
         Color midLineCol = Color.decode("#25252F");
         AppGraphics.drawLine(camera, new Vector2(-100000,       0), new Vector2(100000,    0), 1,  midLineCol); // Horizontal
         AppGraphics.drawLine(camera, new Vector2(0,       -100000), new Vector2(0,     100000), 1, midLineCol); // Vertical
+    }
 
-        g2D.setFont(new Font(FlatInterFont.FAMILY, Font.PLAIN, 20));
-        AppGraphics.drawTextExt(camera, new Vector2(0, -300), "Welcome to Mapost!", midLineCol, 3, 3);
-        resetG2DFont(g2D);
-
+    private void updateRectComponents(Graphics2D g2D) {
         for(RectComponent rect : Application.GRID_MAP_CONTEXT.objects) {
             rect.update();
             rect.draw(g2D, camera);
         }
+    }
 
-        AppGraphics.useGUI(); // ============== GUI BASED RENDERS
+    private void drawDebugTexts(Graphics2D g2D) {
         g2D.setColor(Color.YELLOW);
         AppGraphics.drawText(camera, new Vector2(10, getHeight() - 92), "Mouse(Grid) pos:      " + GridMapContext.MOUSE_POSITION.toString());
         AppGraphics.drawText(camera, new Vector2(10, getHeight() - 72), "Mouse(Camera) pos:    " + Camera.MOUSE_CAM_POS.toString());
         AppGraphics.drawText(camera, new Vector2(10, getHeight() - 52), "Mouse(Component) pos: " + mouseActivities.mousePosition.toString());
         AppGraphics.drawText(camera, new Vector2(10, getHeight() - 32), "camera pos:           " + camera.getCartesianPosition().toString());
         AppGraphics.drawText(camera, new Vector2(10, getHeight() - 12), "Camera Zoom:          " + camera.getZoom());
-        g2D.dispose();
-    }
-
-    public Camera getCamera() {
-        return camera;
-    }
-
-    public void resetG2DFont(Graphics2D g2d) {
-        g2d.setFont(new Font(FlatInterFont.FAMILY, Font.PLAIN, 14));
     }
 
     private void update() {
-        // Logical updates
 
         // Flush out 1 action per draw call
         if (!actionManager.getActionQueue().isEmpty()) {
@@ -112,7 +128,6 @@ public class RenderSurface extends JPanel {
     }
 
 
-    @SuppressWarnings("All")
     private void drawGridGuidelines(Graphics2D g2d, GuidelineType type) {
         g2d.setColor(new Color(
                 guideLineColor.getRed(),
@@ -126,7 +141,7 @@ public class RenderSurface extends JPanel {
         Vector2 camPos = camera.position;
 
         // Calculate the top-left corner in terms of grid
-        int startX = -(camPos.getX_int() % cellSize + cellSize) % cellSize; // Ensures positive values
+        int startX = -(camPos.getX_int() % cellSize + cellSize) % cellSize;
         int startY = -(camPos.getY_int() % cellSize + cellSize) % cellSize;
 
         if (type == GuidelineType.DOTS) {
@@ -161,5 +176,14 @@ public class RenderSurface extends JPanel {
         for (int y = startY; y < height; y += cellSize) {
             g2d.drawLine(0, y, width, y);
         }
+    }
+
+
+    public Camera getCamera() {
+        return camera;
+    }
+
+    public RenderSurfaceKeyInputs getKeyInputs() {
+        return keyInputs;
     }
 }

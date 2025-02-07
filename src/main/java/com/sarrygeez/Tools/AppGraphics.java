@@ -93,6 +93,31 @@ public class AppGraphics {
         resetTransform(originalTransform);
     }
 
+    public static void drawRect(Transform camera, Vector2 start, Vector2 end,
+            int thickness, boolean fillBody, Color bodyColor, Color borderColor) {
+        AffineTransform originalTransform = gContext.getTransform();
+        applyTransform(camera);
+
+        Vector2 dimension = MathUtils.getVector(start, end);
+        if (fillBody) {
+            gContext.setColor(bodyColor);
+            gContext.fillRect(
+                    start.getX_int(), start.getY_int(),
+                    dimension.getX_int(), dimension.getY_int()
+            );
+        }
+
+        // Border
+        gContext.setColor(borderColor);
+        gContext.setStroke(new BasicStroke(thickness));
+        gContext.drawRect(
+                start.getX_int(), start.getY_int(),
+                dimension.getX_int(), dimension.getY_int()
+        );
+
+        resetTransform(originalTransform);
+    }
+
 
     public static void drawPoint(Transform camera, Vector2 position,
             int thickness, boolean isOutline, Color color) {

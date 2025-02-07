@@ -7,6 +7,7 @@ import com.sarrygeez.Core.Rendering.Camera;
 import com.sarrygeez.Core.Rendering.GridMapContext;
 import com.sarrygeez.Core.Rendering.RenderSurface;
 import com.sarrygeez.Data.Vector2;
+import com.sarrygeez.Tools.MathUtils;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -35,6 +36,15 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
     @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == 1) {
+            if (getkeyInput().isActivated(KeyEvent.VK_SHIFT)) {
+                surface.isSelectionActive = true;
+
+                if (surface.selectionStart == null) {
+                    surface.selectionStart = new Vector2(Camera.getMouseX(), Camera.getMouseY());
+                }
+                return;
+            }
+
             isPanning = true;
             lastMousePosition = new Vector2(e.getX(), e.getY());
         }
@@ -46,7 +56,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
             return;
         }
 
-        boolean flag = onRightClick();
+        boolean flag = containsRect();
         if (!flag) {
             // open context menu
             Vector2 screenPos = mousePosition;
@@ -67,6 +77,9 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
         if (e.getButton() == 1) {
             isPanning = false;
             lastMousePosition = null;
+
+            surface.isSelectionActive = false;
+            surface.selectionStart = null;
         }
     }
 
@@ -78,16 +91,28 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
 
     @Override
     public void mouseDragged(MouseEvent e) {
+
         GridMapContext.MOUSE_POSITION.x = e.getXOnScreen();
         GridMapContext.MOUSE_POSITION.y = e.getYOnScreen();
         camera.updateCameraMousePosition(new Vector2(e.getX(), e.getY()));
 
+        if (getkeyInput().isActivated(KeyEvent.VK_SHIFT)
+                && surface.isSelectionActive && surface.selectionStart != null) {
+            surface.selectionEnd = Camera.MOUSE_CAM_POS;
+            repaint();
+            return;
+        }
+
+        // Disable selection on shift exit
+        if (surface.isSelectionActive) {
+            surface.isSelectionActive = false;
+            surface.selectionStart = null;
+        }
+
+
         if (isPanning && lastMousePosition != null) {
             mousePosition = new Vector2(e.getX(), e.getY());
-            Vector2 dir = new Vector2(
-                    mousePosition.x - lastMousePosition.x,
-                    mousePosition.y - lastMousePosition.y
-            );
+            Vector2 dir = MathUtils.getVector(lastMousePosition, mousePosition);
 
             camera.position.x -= dir.x * camera.panSpeed / camera.scale.x;
             camera.position.y -= dir.y * (camera.panSpeed/2) / camera.scale.y;
@@ -123,6 +148,10 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
         return Math.round((value * 10)) / 10f;
     }
 
+    private RenderSurfaceKeyInputs getkeyInput() {
+        return surface.getKeyInputs();
+    }
+
 
     // =========================================================================
     // =========================================================================
@@ -131,7 +160,9 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
      * @return <code>true</code> if a rect has been interacted with.
      *          <code>false</code> otherwise
      */
-    public boolean onRightClick() {
+    public boolean containsRect() {
+        // Change this to use spatial partitioning or other space related search
+        // as searching for the entire list is uhh, not ideal
         for(RectComponent rect : Application.GRID_MAP_CONTEXT.objects) {
 
             if (rect.positionInsideBbox(Camera.MOUSE_CAM_POS))
