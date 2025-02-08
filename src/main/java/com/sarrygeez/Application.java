@@ -4,6 +4,7 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.fonts.inter.FlatInterFont;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import com.sarrygeez.Core.Inputs.GlobalInput;
 import com.sarrygeez.Core.Inputs.RenderSurfaceKeyInputs;
 import com.sarrygeez.Core.Rendering.GridMapContext;
 import com.sarrygeez.Data.Vector2;
@@ -30,6 +31,9 @@ public class Application extends JFrame {
     public static final GridMapContext GRID_MAP_CONTEXT = new GridMapContext();
 
     public Application() {
+        GlobalInput.init(this);
+        GlobalInput.getInstance();
+
         setTitle(WINDOW_TITLE + " v" + APP_VERSION);
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setMinimumSize(new Dimension(700, 500));
