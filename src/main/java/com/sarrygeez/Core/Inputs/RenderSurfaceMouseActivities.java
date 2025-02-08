@@ -1,5 +1,15 @@
-package com.sarrygeez;
+package com.sarrygeez.Core.Inputs;
 
+import com.sarrygeez.*;
+import com.sarrygeez.Core.Actions.Goto;
+import com.sarrygeez.Core.Actions.SpawnPost;
+import com.sarrygeez.Core.Rendering.Camera;
+import com.sarrygeez.Core.Rendering.GridMapContext;
+import com.sarrygeez.Core.Rendering.RenderSurface;
+import com.sarrygeez.Data.Vector2;
+import com.sarrygeez.Debug.Debug;
+import com.sarrygeez.Debug.LogLevel;
+import com.sarrygeez.Tools.MathUtils;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -24,15 +34,19 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
         surface.repaint();
     }
 
-    private void revalidate() {
-        surface.revalidate();
-    }
-
-
 
     @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == 1) {
+            if (getKeyInput().isActivated(KeyEvent.VK_SHIFT)) {
+                surface.isSelectionActive = true;
+
+                if (surface.selectionStart == null) {
+                    surface.selectionStart = new Vector2(Camera.getMouseX(), Camera.getMouseY());
+                }
+                return;
+            }
+
             isPanning = true;
             lastMousePosition = new Vector2(e.getX(), e.getY());
         }
@@ -44,14 +58,15 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
             return;
         }
 
-        boolean flag = onRightClick();
+        boolean flag = containsRect();
         if (!flag) {
             // open context menu
             Vector2 screenPos = mousePosition;
 
             JPopupMenu menu = new JPopupMenu();
             menu.setLayout(new MigLayout("FillX, FlowY, insets 0, gap 5"));
-            menu.add(gotoAction(e.getComponent()), "span, grow");
+            menu.add(gotoActionGUI(e.getComponent()), "span, grow");
+            menu.add(spawnPostGUI(e.getComponent()), "span, grow");
             menu.add(changeGuidelineAction(e.getComponent()), "span, grow");
 
             menu.show(e.getComponent(),screenPos.getX_int(), screenPos.getY_int());
@@ -64,6 +79,8 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
         if (e.getButton() == 1) {
             isPanning = false;
             lastMousePosition = null;
+            exitSelection();
+            repaint();
         }
     }
 
@@ -75,16 +92,25 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
 
     @Override
     public void mouseDragged(MouseEvent e) {
+
         GridMapContext.MOUSE_POSITION.x = e.getXOnScreen();
         GridMapContext.MOUSE_POSITION.y = e.getYOnScreen();
         camera.updateCameraMousePosition(new Vector2(e.getX(), e.getY()));
 
+        if (getKeyInput().isActivated(KeyEvent.VK_SHIFT)
+                && surface.isSelectionActive && surface.selectionStart != null) {
+            surface.selectionEnd = Camera.MOUSE_CAM_POS;
+            repaint();
+            return;
+        }
+
+        // Disable selection on shift exit
+        exitSelection();
+
+
         if (isPanning && lastMousePosition != null) {
             mousePosition = new Vector2(e.getX(), e.getY());
-            Vector2 dir = new Vector2(
-                    mousePosition.x - lastMousePosition.x,
-                    mousePosition.y - lastMousePosition.y
-            );
+            Vector2 dir = MathUtils.getVector(lastMousePosition, mousePosition);
 
             camera.position.x -= dir.x * camera.panSpeed / camera.scale.x;
             camera.position.y -= dir.y * (camera.panSpeed/2) / camera.scale.y;
@@ -120,6 +146,10 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
         return Math.round((value * 10)) / 10f;
     }
 
+    private RenderSurfaceKeyInputs getKeyInput() {
+        return surface.getKeyInputs();
+    }
+
 
     // =========================================================================
     // =========================================================================
@@ -128,8 +158,10 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
      * @return <code>true</code> if a rect has been interacted with.
      *          <code>false</code> otherwise
      */
-    public boolean onRightClick() {
-        for(RectComp rect : Application.GRID_MAP_CONTEXT.objects) {
+    public boolean containsRect() {
+        // Change this to use spatial partitioning or other space related search
+        // as searching for the entire list is uhh, not ideal
+        for(RectComponent rect : Application.GRID_MAP_CONTEXT.objects) {
 
             if (rect.positionInsideBbox(Camera.MOUSE_CAM_POS))
             {
@@ -143,8 +175,17 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
         return false;
     }
 
+    private void exitSelection() {
+        if (!surface.isSelectionActive) {
+            return;
+        }
+        surface.isSelectionActive = false;
+        surface.selectionStart = null;
+        Debug.log("Exited Selection" , LogLevel.OK);
+    }
 
-    private JMenuItem gotoAction(Component invoker) {
+
+    private JMenuItem gotoActionGUI(Component invoker) {
         JMenuItem item = new JMenuItem("Go to");
         item.addActionListener(e -> {
             JPopupMenu whereInput = new JPopupMenu();
@@ -157,9 +198,10 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
             confirm.addActionListener(e1 -> {
                 Vector2 pos = new Vector2(
                         (int)xNum.getValue(),
-                        (int)yNum.getValue()
+                        -(int)yNum.getValue()
                 );
-                gotoConfirm(pos, whereInput);
+                surface.actionManager.addAction(new Goto(camera, pos));
+                whereInput.setVisible(false);
             });
 
             whereInput.add(new JLabel("X: "));
@@ -174,17 +216,47 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
         return item;
     }
 
-    private void gotoConfirm(Vector2 pos, JPopupMenu caller) {
-        Vector2 coord = Application.toCartesianCoordinate(pos);
+    // 💀💀💀 too lazy
+    private JMenuItem spawnPostGUI(Component invoker) {
+        JMenuItem item = new JMenuItem("Create Post");
+        item.addActionListener(e -> {
+            JPopupMenu whereInput = new JPopupMenu();
+            whereInput.setLayout(new MigLayout("insets 10, FillX, gap 10"));
 
-        camera.setPosition(coord);
-        revalidate();
-        repaint();
+            JSpinner xNum = new JSpinner();
+            JSpinner yNum = new JSpinner();
 
-        caller.setVisible(false);
+            int cellSize = GridMapContext.CELL_SIZE;
+            Vector2 camPos = Camera.MOUSE_CAM_POS;
+            xNum.setValue(camPos.getX_int() / cellSize);
+            yNum.setValue(-camPos.getY_int() / cellSize);
+
+            JTextArea message = new JTextArea();
+            message.setLineWrap(true);
+            message.setWrapStyleWord(true);
+
+            JButton confirm = new JButton("Create");
+            confirm.addActionListener(e1 -> {
+                Vector2 pos = new Vector2(
+                        (int)xNum.getValue(),
+                        -(int)yNum.getValue()
+                );
+                surface.actionManager.addAction(new SpawnPost(pos, message.getText()));
+                whereInput.setVisible(false);
+            });
+
+            whereInput.add(xNum, "grow, width 120:120:120");
+            whereInput.add(yNum, "wrap, grow, width 120:120:120");
+            whereInput.add(message, "wrap, span, grow, height 170:170:170");
+            whereInput.add(confirm, "span, grow");
+            whereInput.show(invoker, mousePosition.getX_int(), mousePosition.getY_int());
+        });
+
+        return item;
     }
 
 
+    // this is for testing shit purposes, this is going to be a setting configuration
     private JMenuItem changeGuidelineAction(Component invoker) {
         JMenuItem change = new JMenuItem("Change Guideline");
         change.addActionListener(e -> {

@@ -1,4 +1,7 @@
-package com.sarrygeez;
+package com.sarrygeez.Tools;
+
+import com.sarrygeez.Data.Transform;
+import com.sarrygeez.Data.Vector2;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -84,6 +87,34 @@ public class AppGraphics {
                 (int) (transform.position.y + borderThickness),
                 (int) transform.scaleToSize(true),
                 (int) transform.scaleToSize(false),
+                radius, radius
+        );
+
+        resetTransform(originalTransform);
+    }
+
+    public static void drawRect(Transform camera, Vector2 start, Vector2 end, int radius,
+            int thickness, boolean fillBody, Color bodyColor, Color borderColor) {
+        AffineTransform originalTransform = gContext.getTransform();
+        applyTransform(camera);
+
+        Vector2 dimension = MathUtils.abs(MathUtils.getVector(start, end));
+        Vector2 anchor = MathUtils.min(start, end);
+        if (fillBody) {
+            gContext.setColor(bodyColor);
+            gContext.fillRoundRect(
+                    anchor.getX_int(), anchor.getY_int(),
+                    dimension.getX_int(), dimension.getY_int(),
+                    radius, radius
+            );
+        }
+
+        // Border
+        gContext.setColor(borderColor);
+        gContext.setStroke(new BasicStroke(thickness));
+        gContext.drawRoundRect(
+                anchor.getX_int(), anchor.getY_int(),
+                dimension.getX_int(), dimension.getY_int(),
                 radius, radius
         );
 

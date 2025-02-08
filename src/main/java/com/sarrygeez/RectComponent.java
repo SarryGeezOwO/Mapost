@@ -1,11 +1,17 @@
 package com.sarrygeez;
 
+import com.sarrygeez.Core.Rendering.Camera;
+import com.sarrygeez.Data.Transform;
+import com.sarrygeez.Data.Vector2;
+import com.sarrygeez.Core.Inputs.MouseActionAdapter;
+import com.sarrygeez.Tools.AppGraphics;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class RectComp {
+public class RectComponent {
 
     public Transform transform;
     public int radius = 0;
@@ -16,13 +22,13 @@ public class RectComp {
 
     private final List<MouseActionAdapter> adapters = new ArrayList<>();
 
-    public RectComp() {
+    public RectComponent() {
         transform = new Transform(0, 0);
         background = Color.WHITE;
         borderColor = Color.BLACK;
     }
 
-    public RectComp(int x, int y, Color background, Color borderColor) {
+    public RectComponent(int x, int y, Color background, Color borderColor) {
         this.transform = new Transform(x, y);
         this.background = background;
         this.borderColor = borderColor;

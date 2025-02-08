@@ -4,17 +4,24 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.fonts.inter.FlatInterFont;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import com.sarrygeez.Core.Inputs.RenderSurfaceKeyInputs;
+import com.sarrygeez.Core.Rendering.GridMapContext;
+import com.sarrygeez.Data.Vector2;
 import com.sarrygeez.Posts.TextPost;
+import com.sarrygeez.Core.Rendering.RenderSurface;
+import com.sarrygeez.Tools.AppTools;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class Application extends JFrame {
 
-    protected static ArrayList<FlatSVGIcon> icons = new ArrayList<>();
+    public static ArrayList<FlatSVGIcon> icons = new ArrayList<>();
     public static final String WINDOW_TITLE = "Mapost";
     public static final String APP_VERSION = "1.0.0";
     public static int WINDOW_WIDTH = 1400;
@@ -23,18 +30,18 @@ public class Application extends JFrame {
     public static final GridMapContext GRID_MAP_CONTEXT = new GridMapContext();
 
     public Application() {
-        init();
-    }
-
-    private void init() {
-        // Initialize JComponents
         setTitle(WINDOW_TITLE + " v" + APP_VERSION);
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setMinimumSize(new Dimension(700, 500));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        init();
+    }
 
-        RenderSurface cp = new RenderSurface(); // this stands for ContentPane ok? It's not something devious or whatever
+    private void init() {
+        RenderSurfaceKeyInputs keyInputs = new RenderSurfaceKeyInputs();
+        RenderSurface cp = new RenderSurface(keyInputs); // this stands for ContentPane ok? It's not something devious or whatever
+        addKeyListener(keyInputs);
         setContentPane(cp);
 
         setIconImage(AppTools.getSVG("AppIMG.svg").getImage());
@@ -45,6 +52,13 @@ public class Application extends JFrame {
                 WINDOW_WIDTH = cp.getWidth();
                 WINDOW_HEIGHT = cp.getHeight();
                 cp.getCamera().updateSize();
+            }
+        });
+
+        addWindowFocusListener(new WindowAdapter() {
+            @Override
+            public void windowLostFocus(WindowEvent e) {
+                keyInputs.resetModifiers();
             }
         });
 

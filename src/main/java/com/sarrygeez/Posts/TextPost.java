@@ -1,9 +1,10 @@
 package com.sarrygeez.Posts;
 
 import com.formdev.flatlaf.fonts.inter.FlatInterFont;
-import com.sarrygeez.AppGraphics;
-import com.sarrygeez.Camera;
-import com.sarrygeez.Vector2;
+import com.sarrygeez.Tools.AppGraphics;
+import com.sarrygeez.Core.Rendering.Camera;
+import com.sarrygeez.Data.Transform;
+import com.sarrygeez.Data.Vector2;
 
 import java.awt.*;
 
@@ -11,12 +12,14 @@ import java.awt.*;
 public class TextPost extends Post{
 
     private String message;
+    private final Vector2 minSize = new Vector2(120, 90);
 
     public TextPost(String author, String title, String message, String dateCreated) {
         super(author, title, dateCreated);
         this.message = message;
         radius = 10;
-        transform.setScale(new Vector2(10, 5));
+
+        adjustSize();
     }
 
     @Override
@@ -38,7 +41,7 @@ public class TextPost extends Post{
         g2d.setFont(new Font(FlatInterFont.FAMILY, Font.PLAIN, 14));
 
         Vector2 msgPos = new Vector2(pos.x + 5, pos.y + 32);
-        AppGraphics.drawTextExt(camera, msgPos, getMessage(), Color.DARK_GRAY, 1, 1);
+        AppGraphics.drawTextExt(camera, msgPos, getMessage(), Color.decode("#25252F"), 1, 1);
     }
 
     public String getMessage() {
@@ -47,5 +50,21 @@ public class TextPost extends Post{
 
     public void setMessage(String message) {
         this.message = message;
+        adjustSize();
+    }
+
+    private void adjustSize() {
+        int longest = 0;
+        String[] lines = message.split("\n");
+        for(String line : lines) {
+            if (longest < line.length()) {
+                longest = line.length();
+            }
+        }
+        float calculatedWidth = longest * 8.5f;
+        transform.setScale(new Vector2(
+                Transform.translateSizeToScale((Math.max(calculatedWidth, minSize.x))),
+                Transform.translateSizeToScale((lines.length * 18) + 46)
+        ));
     }
 }

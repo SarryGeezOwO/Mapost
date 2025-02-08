@@ -1,6 +1,15 @@
-package com.sarrygeez;
+package com.sarrygeez.Core.Rendering;
 
 import com.formdev.flatlaf.fonts.inter.FlatInterFont;
+import com.sarrygeez.*;
+import com.sarrygeez.Core.Actions.Action;
+import com.sarrygeez.Core.Actions.ActionManager;
+import com.sarrygeez.Core.Inputs.RenderSurfaceKeyInputs;
+import com.sarrygeez.Core.Inputs.RenderSurfaceMouseActivities;
+import com.sarrygeez.Data.Vector2;
+import com.sarrygeez.Debug.Debug;
+import com.sarrygeez.Debug.LogLevel;
+import com.sarrygeez.Tools.AppGraphics;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,16 +27,24 @@ public class RenderSurface extends JPanel {
     }
 
     public final Camera camera = new Camera();
+    public final ActionManager actionManager = new ActionManager();
 
-    public static Color guideLineColor = Color.decode("#25252F");
-    public static int guideLineColorAlpha = 50;
-    public static GuidelineType guidelineType = GuidelineType.DOTS;
+    public static Color guideLineColor = new Color(70, 70, 80);
+    public static int guideLineColorAlpha = 200;
+    public static GuidelineType guidelineType = GuidelineType.LINES;
 
     public static int WIDTH = 0;
     public static int HEIGHT = 0;
 
+    public boolean isSelectionActive = false;
+    public Vector2 selectionStart = null;
+    public Vector2 selectionEnd = null;
+
     private final RenderSurfaceMouseActivities mouseActivities = new RenderSurfaceMouseActivities(this);
-    public RenderSurface() {
+    private final RenderSurfaceKeyInputs keyInputs;
+
+    public RenderSurface(RenderSurfaceKeyInputs keyInputs) {
+        this.keyInputs = keyInputs;
 
         setDoubleBuffered(true);
         setBackground(new Color(80, 80, 95));
@@ -35,6 +52,11 @@ public class RenderSurface extends JPanel {
         addMouseListener(mouseActivities);
         addMouseMotionListener(mouseActivities);
         addMouseWheelListener(mouseActivities);
+        requestFocus();
+
+        // Logical update
+        new Timer(0, e -> update()).start();
+
         WIDTH = getWidth();
         HEIGHT = getHeight();
     }
@@ -45,6 +67,8 @@ public class RenderSurface extends JPanel {
         Graphics2D g2D = (Graphics2D)g.create();
         g2D.setFont(new Font(FlatInterFont.FAMILY, Font.PLAIN, 14));
         g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // Guidelines duh...
         drawGridGuidelines(g2D, guidelineType);
 
         //Apply zoom scale
@@ -53,39 +77,74 @@ public class RenderSurface extends JPanel {
         AppGraphics.setGContext(g2D); // Update Graphical context
         AppGraphics.useCamera(); // ========= CAMERA BASED RENDER
 
-        Color midLineCol = Color.decode("#25252F");
-        AppGraphics.drawLine(camera, new Vector2(-100000,       0), new Vector2(100000,    0), 1,  midLineCol); // Horizontal
-        AppGraphics.drawLine(camera, new Vector2(0,       -100000), new Vector2(0,     100000), 1, midLineCol); // Vertical
+        drawCartesianLines();
+        updateRectComponents(g2D);
+        drawSelection(selectionStart, selectionEnd);
 
-        g2D.setFont(new Font(FlatInterFont.FAMILY, Font.PLAIN, 20));
-        AppGraphics.drawTextExt(camera, new Vector2(0, -300), "Welcome to Mapost!", midLineCol, 3, 3);
-        resetG2DFont(g2D);
-
-        for(RectComp rect : Application.GRID_MAP_CONTEXT.objects) {
-            rect.update();
-            rect.draw(g2D, camera);
-        }
-
-        AppGraphics.useGUI(); // ============== GUI BASED RENDERS
-        g2D.setColor(Color.YELLOW);
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 92), "Mouse(Grid) pos:      " + GridMapContext.MOUSE_POSITION.toString());
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 72), "Mouse(Camera) pos:    " + Camera.MOUSE_CAM_POS.toString());
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 52), "Mouse(Component) pos: " + mouseActivities.mousePosition.toString());
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 32), "camera pos:           " + camera.getCartesianPosition().toString());
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 12), "Camera Zoom:          " + camera.getZoom());
+        AppGraphics.useGUI();
+        AppGraphics.drawPoint(camera, new Vector2(getWidth()/2, getHeight()/2), 4, true, Color.RED);
+        drawWorldLocation();
+        drawDebugTexts(g2D);
         g2D.dispose();
     }
 
-    public Camera getCamera() {
-        return camera;
+    private void drawSelection(Vector2 start, Vector2 end) {
+        if (!isSelectionActive) {
+            return;
+        }
+        if (start == null || end == null) {
+            return;
+        }
+        AppGraphics.drawRect(
+                camera, start, end, 10, 2, true,
+                new Color(162, 84, 222, 70), Color.decode("#862bcc"));
     }
 
-    public void resetG2DFont(Graphics2D g2d) {
-        g2d.setFont(new Font(FlatInterFont.FAMILY, Font.PLAIN, 14));
+    private void drawWorldLocation() {
+        AppGraphics.drawRect(camera,
+                new Vector2(10, 10),
+                new Vector2(250, 40),
+                10, 1, true, Color.WHITE, Color.BLACK
+        );
+        AppGraphics.drawTextExt(
+                camera, new Vector2(12, 12),
+                Vector2.formatStr(camera.getWorldPosition()),
+                Color.BLACK, 1, 1
+        );
+    }
+
+    private void drawCartesianLines() {
+        Color midLineCol = Color.decode("#25252F");
+        AppGraphics.drawLine(camera, new Vector2(-100000,       0), new Vector2(100000,    0), 1,  midLineCol); // Horizontal
+        AppGraphics.drawLine(camera, new Vector2(0,       -100000), new Vector2(0,     100000), 1, midLineCol); // Vertical
+    }
+
+    private void updateRectComponents(Graphics2D g2D) {
+        for(RectComponent rect : Application.GRID_MAP_CONTEXT.objects) {
+            rect.update();
+            rect.draw(g2D, camera);
+        }
+    }
+
+    private void drawDebugTexts(Graphics2D g2D) {
+        g2D.setColor(Color.YELLOW);
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 92), "Mouse(SCREEN) pos:    " + GridMapContext.MOUSE_POSITION.toString());
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 72), "Mouse(WORLD) pos:     " + Vector2.formatStr(camera.getWorldMousePosition()));
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 52), "Mouse(COMPONENT) pos: " + mouseActivities.mousePosition.toString());
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 12), "Camera Zoom:          " + camera.getZoom());
+    }
+
+    // =================== LOGICAL UPDATE =======================
+    private void update() {
+
+        // Flush out 1 action per draw call
+        if (!actionManager.getActionQueue().isEmpty()) {
+            Action act = actionManager.triggerAction();
+            Debug.log("Action Triggered: " + act.name(), LogLevel.SUCCESS);
+        }
     }
 
 
-    @SuppressWarnings("All")
     private void drawGridGuidelines(Graphics2D g2d, GuidelineType type) {
         g2d.setColor(new Color(
                 guideLineColor.getRed(),
@@ -95,11 +154,11 @@ public class RenderSurface extends JPanel {
         ));
         int width = getWidth();
         int height = getHeight();
-        int cellSize = 64;
+        int cellSize = (int)(GridMapContext.CELL_SIZE * camera.getZoom());
         Vector2 camPos = camera.position;
 
         // Calculate the top-left corner in terms of grid
-        int startX = -(camPos.getX_int() % cellSize + cellSize) % cellSize; // Ensures positive values
+        int startX = -(camPos.getX_int() % cellSize + cellSize) % cellSize;
         int startY = -(camPos.getY_int() % cellSize + cellSize) % cellSize;
 
         if (type == GuidelineType.DOTS) {
@@ -134,5 +193,14 @@ public class RenderSurface extends JPanel {
         for (int y = startY; y < height; y += cellSize) {
             g2d.drawLine(0, y, width, y);
         }
+    }
+
+
+    public Camera getCamera() {
+        return camera;
+    }
+
+    public RenderSurfaceKeyInputs getKeyInputs() {
+        return keyInputs;
     }
 }

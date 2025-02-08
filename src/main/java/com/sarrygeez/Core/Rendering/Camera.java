@@ -1,4 +1,8 @@
-package com.sarrygeez;
+package com.sarrygeez.Core.Rendering;
+
+import com.sarrygeez.Application;
+import com.sarrygeez.Data.Transform;
+import com.sarrygeez.Data.Vector2;
 
 public class Camera extends Transform {
 
@@ -19,6 +23,7 @@ public class Camera extends Transform {
         updateBbox();
     }
 
+    // used in zooms and shit IDK Anymore...
     public void updateCameraMousePosition(Vector2 basePos) {
         float adjustedX = (basePos.x + position.x) / zoom;
         float adjustedY = (basePos.y + position.y) / zoom;
@@ -31,11 +36,18 @@ public class Camera extends Transform {
      * ONLY USED FOR TEXTS
      * @return the converted position
      */
-    public Vector2 getCartesianPosition() {
+    @Override
+    public Vector2 getWorldPosition() {
         return new Vector2(
-            position.getX_int() + Application.WINDOW_WIDTH/2,
-            position.getY_int() + Application.WINDOW_HEIGHT/2
+            (position.getX_int() + (float) Application.WINDOW_WIDTH /2) / (GridMapContext.CELL_SIZE * zoom),
+            (position.getY_int() + (float) Application.WINDOW_HEIGHT /2) / (GridMapContext.CELL_SIZE * zoom)
         );
+    }
+
+    public Vector2 getWorldMousePosition() {
+        return new Vector2(
+                getMouseX() / GridMapContext.CELL_SIZE,
+                getMouseY() / GridMapContext.CELL_SIZE);
     }
 
     public void setZoom(float zoom) {
@@ -52,13 +64,5 @@ public class Camera extends Transform {
 
     public static float getMouseY() {
         return MOUSE_CAM_POS.y;
-    }
-
-    public static int getMouseX_int() {
-        return (int) MOUSE_CAM_POS.x;
-    }
-
-    public static int getMouseY_int() {
-        return (int) MOUSE_CAM_POS.y;
     }
 }

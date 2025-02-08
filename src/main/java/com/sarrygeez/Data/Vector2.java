@@ -1,4 +1,4 @@
-package com.sarrygeez;
+package com.sarrygeez.Data;
 
 @SuppressWarnings("unused")
 public class Vector2 {
@@ -33,6 +33,24 @@ public class Vector2 {
 
     public int getY_int() {
         return (int)y;
+    }
+
+    public static Vector2 mult(Vector2 a, Vector2 b) {
+        return new Vector2(
+                a.x * b.x,
+                a.y * b.y
+        );
+    }
+
+    public static Vector2 scale(Vector2 target, float scale) {
+        return new Vector2(
+                target.x * scale,
+                target.y * scale
+        );
+    }
+
+    public static String formatStr(Vector2 vector) {
+        return String.format("(%.2f, %.2f)", vector.x, vector.y);
     }
 
     public static float dotProduct(Vector2 vec1, Vector2 vec2) {
