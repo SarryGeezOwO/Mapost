@@ -38,10 +38,10 @@ public class LocationBar extends RectComponent {
                 if (!positionInsideBbox(Camera.MOUSE_CAM_POS)) {
                     return;
                 }
-                StringSelection selection = new StringSelection(camera.getWorldPosition().toString());
+                StringSelection selection = new StringSelection(Vector2.formatStr(camera.getWorldPosition()));
                 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                 clipboard.setContents(selection, selection);
-                Debug.log("Clicked on location bar", LogLevel.OK);
+                Debug.log("Successfully copied current location!", LogLevel.SUCCESS);
             }
         });
     }
