@@ -13,7 +13,6 @@ import com.sarrygeez.Tools.AppGraphics;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 
 /*
     A very unclear class object, literally breaking every rule of
@@ -89,6 +88,9 @@ public class RenderSurface extends JPanel {
 
     private void drawSelection(Vector2 start, Vector2 end) {
         if (!isSelectionActive) {
+            return;
+        }
+        if (start == null && end == null) {
             return;
         }
         AppGraphics.drawRect(
