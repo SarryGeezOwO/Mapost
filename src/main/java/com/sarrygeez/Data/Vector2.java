@@ -35,6 +35,24 @@ public class Vector2 {
         return (int)y;
     }
 
+    public static Vector2 mult(Vector2 a, Vector2 b) {
+        return new Vector2(
+                a.x * b.x,
+                a.y * b.y
+        );
+    }
+
+    public static Vector2 scale(Vector2 target, float scale) {
+        return new Vector2(
+                target.x * scale,
+                target.y * scale
+        );
+    }
+
+    public static String formatStr(Vector2 vector) {
+        return String.format("(%.2f, %.2f)", vector.x, vector.y);
+    }
+
     public static float dotProduct(Vector2 vec1, Vector2 vec2) {
         return vec1.x * vec2.x + vec1.y * vec2.y;
     }

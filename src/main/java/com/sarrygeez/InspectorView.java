@@ -22,7 +22,7 @@ public class InspectorView extends JPopupMenu {
             rect.transform.scale.getY_int()
         );
 
-        add(new JLabel("World Position: " + rect.transform.position.toString()));
+        add(new JLabel("World Position: " + Vector2.formatStr(rect.transform.getWorldPosition())));
         add(new JLabel("Scale: " + scaleInt));
         add(Box.createRigidArea(new Dimension(0, 10)));
         add(new JLabel("Width: " + widthStr));

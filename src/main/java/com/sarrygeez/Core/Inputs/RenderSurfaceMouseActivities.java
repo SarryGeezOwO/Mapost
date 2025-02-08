@@ -80,6 +80,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
             isPanning = false;
             lastMousePosition = null;
             exitSelection();
+            repaint();
         }
     }
 
@@ -224,9 +225,11 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
 
             JSpinner xNum = new JSpinner();
             JSpinner yNum = new JSpinner();
+
+            int cellSize = GridMapContext.CELL_SIZE;
             Vector2 camPos = Camera.MOUSE_CAM_POS;
-            xNum.setValue(camPos.getX_int());
-            yNum.setValue(-camPos.getY_int());
+            xNum.setValue(camPos.getX_int() / cellSize);
+            yNum.setValue(-camPos.getY_int() / cellSize);
 
             JTextArea message = new JTextArea();
             message.setLineWrap(true);

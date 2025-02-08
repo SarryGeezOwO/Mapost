@@ -1,8 +1,8 @@
 package com.sarrygeez.Core.Actions;
 
-
 import com.sarrygeez.Application;
 import com.sarrygeez.Core.Rendering.Camera;
+import com.sarrygeez.Core.Rendering.GridMapContext;
 import com.sarrygeez.Data.Vector2;
 
 public class Goto implements Action{
@@ -17,7 +17,9 @@ public class Goto implements Action{
 
     @Override
     public void execute() {
-        camera.setPosition(Application.toCartesianCoordinate(newPos));
+        // Given a world coordinate, transform that position into a raw non-scaled i.e,{Zoom, CELL_SIZE} value
+        Vector2 scaled = Vector2.scale(newPos, GridMapContext.CELL_SIZE * camera.getZoom());
+        camera.setPosition(Application.toCartesianCoordinate(scaled));
     }
 
     @Override

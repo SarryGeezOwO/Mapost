@@ -29,9 +29,9 @@ public class RenderSurface extends JPanel {
     public final Camera camera = new Camera();
     public final ActionManager actionManager = new ActionManager();
 
-    public static Color guideLineColor = Color.decode("#25252F");
-    public static int guideLineColorAlpha = 50;
-    public static GuidelineType guidelineType = GuidelineType.DOTS;
+    public static Color guideLineColor = new Color(70, 70, 80);
+    public static int guideLineColorAlpha = 200;
+    public static GuidelineType guidelineType = GuidelineType.LINES;
 
     public static int WIDTH = 0;
     public static int HEIGHT = 0;
@@ -82,6 +82,8 @@ public class RenderSurface extends JPanel {
         drawSelection(selectionStart, selectionEnd);
 
         AppGraphics.useGUI();
+        AppGraphics.drawPoint(camera, new Vector2(getWidth()/2, getHeight()/2), 4, true, Color.RED);
+        drawWorldLocation();
         drawDebugTexts(g2D);
         g2D.dispose();
     }
@@ -90,12 +92,25 @@ public class RenderSurface extends JPanel {
         if (!isSelectionActive) {
             return;
         }
-        if (start == null && end == null) {
+        if (start == null || end == null) {
             return;
         }
         AppGraphics.drawRect(
-                camera, start, end, 2, true,
+                camera, start, end, 10, 2, true,
                 new Color(162, 84, 222, 70), Color.decode("#862bcc"));
+    }
+
+    private void drawWorldLocation() {
+        AppGraphics.drawRect(camera,
+                new Vector2(10, 10),
+                new Vector2(250, 40),
+                10, 1, true, Color.WHITE, Color.BLACK
+        );
+        AppGraphics.drawTextExt(
+                camera, new Vector2(12, 12),
+                Vector2.formatStr(camera.getWorldPosition()),
+                Color.BLACK, 1, 1
+        );
     }
 
     private void drawCartesianLines() {
@@ -113,13 +128,13 @@ public class RenderSurface extends JPanel {
 
     private void drawDebugTexts(Graphics2D g2D) {
         g2D.setColor(Color.YELLOW);
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 92), "Mouse(Grid) pos:      " + GridMapContext.MOUSE_POSITION.toString());
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 72), "Mouse(Camera) pos:    " + Camera.MOUSE_CAM_POS.toString());
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 52), "Mouse(Component) pos: " + mouseActivities.mousePosition.toString());
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 32), "camera pos:           " + camera.getCartesianPosition().toString());
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 92), "Mouse(SCREEN) pos:    " + GridMapContext.MOUSE_POSITION.toString());
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 72), "Mouse(WORLD) pos:     " + Vector2.formatStr(camera.getWorldMousePosition()));
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 52), "Mouse(COMPONENT) pos: " + mouseActivities.mousePosition.toString());
         AppGraphics.drawText(camera, new Vector2(10, getHeight() - 12), "Camera Zoom:          " + camera.getZoom());
     }
 
+    // =================== LOGICAL UPDATE =======================
     private void update() {
 
         // Flush out 1 action per draw call
@@ -139,7 +154,7 @@ public class RenderSurface extends JPanel {
         ));
         int width = getWidth();
         int height = getHeight();
-        int cellSize = 64;
+        int cellSize = (int)(GridMapContext.CELL_SIZE * camera.getZoom());
         Vector2 camPos = camera.position;
 
         // Calculate the top-left corner in terms of grid

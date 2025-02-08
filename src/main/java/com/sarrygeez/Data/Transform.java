@@ -67,6 +67,11 @@ public class Transform {
         updateBbox();
     }
 
+    public Vector2 getWorldPosition() {
+        return new Vector2(
+                position.x / GridMapContext.CELL_SIZE,
+                position.y / GridMapContext.CELL_SIZE);
+    }
 
     // Translates scale to a size value e.g,; Width and height
     public float scaleToSize(boolean isX) {

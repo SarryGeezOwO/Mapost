@@ -1,6 +1,7 @@
 package com.sarrygeez.Core.Actions;
 
 import com.sarrygeez.Application;
+import com.sarrygeez.Core.Rendering.GridMapContext;
 import com.sarrygeez.Posts.TextPost;
 import com.sarrygeez.Data.Vector2;
 
@@ -19,7 +20,7 @@ public class SpawnPost implements Action{
         // something idk, please kill me
         // Fuck Software in general bro
         TextPost post = new TextPost("Sarrie", "...", message, "");
-        post.transform.setPosition(pos);
+        post.transform.setPosition(Vector2.scale(pos, GridMapContext.CELL_SIZE));
         Application.GRID_MAP_CONTEXT.objects.add(post);
     }
 

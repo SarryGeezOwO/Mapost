@@ -93,7 +93,7 @@ public class AppGraphics {
         resetTransform(originalTransform);
     }
 
-    public static void drawRect(Transform camera, Vector2 start, Vector2 end,
+    public static void drawRect(Transform camera, Vector2 start, Vector2 end, int radius,
             int thickness, boolean fillBody, Color bodyColor, Color borderColor) {
         AffineTransform originalTransform = gContext.getTransform();
         applyTransform(camera);
@@ -102,18 +102,20 @@ public class AppGraphics {
         Vector2 anchor = MathUtils.min(start, end);
         if (fillBody) {
             gContext.setColor(bodyColor);
-            gContext.fillRect(
+            gContext.fillRoundRect(
                     anchor.getX_int(), anchor.getY_int(),
-                    dimension.getX_int(), dimension.getY_int()
+                    dimension.getX_int(), dimension.getY_int(),
+                    radius, radius
             );
         }
 
         // Border
         gContext.setColor(borderColor);
         gContext.setStroke(new BasicStroke(thickness));
-        gContext.drawRect(
+        gContext.drawRoundRect(
                 anchor.getX_int(), anchor.getY_int(),
-                dimension.getX_int(), dimension.getY_int()
+                dimension.getX_int(), dimension.getY_int(),
+                radius, radius
         );
 
         resetTransform(originalTransform);
