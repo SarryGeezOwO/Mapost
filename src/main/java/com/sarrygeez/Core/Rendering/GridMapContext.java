@@ -1,7 +1,7 @@
 package com.sarrygeez.Core.Rendering;
 
 import com.sarrygeez.Data.Vector2;
-import com.sarrygeez.RectComponent;
+import com.sarrygeez.Components.RectComponent;
 
 import java.util.ArrayList;
 import java.util.List;

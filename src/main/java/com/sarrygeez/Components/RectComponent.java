@@ -1,4 +1,4 @@
-package com.sarrygeez;
+package com.sarrygeez.Components;
 
 import com.sarrygeez.Core.Rendering.Camera;
 import com.sarrygeez.Data.Transform;
@@ -72,6 +72,7 @@ public class RectComponent {
      * @return a boolean whether the position is inside the bounding box
      */
     public boolean positionInsideBbox(Vector2 position) {
+        // Position given should not be scaled down by Cell size and zoom, just the raw world position
         return (
             position.x > transform.bbox_left &&
             position.x < transform.bbox_right &&

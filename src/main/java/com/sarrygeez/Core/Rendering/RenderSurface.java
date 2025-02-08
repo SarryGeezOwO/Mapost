@@ -2,6 +2,8 @@ package com.sarrygeez.Core.Rendering;
 
 import com.formdev.flatlaf.fonts.inter.FlatInterFont;
 import com.sarrygeez.*;
+import com.sarrygeez.Components.LocationBar;
+import com.sarrygeez.Components.RectComponent;
 import com.sarrygeez.Core.Actions.Action;
 import com.sarrygeez.Core.Actions.ActionManager;
 import com.sarrygeez.Core.Inputs.RenderSurfaceKeyInputs;
@@ -40,8 +42,8 @@ public class RenderSurface extends JPanel {
     public Vector2 selectionStart = null;
     public Vector2 selectionEnd = null;
 
-    private final RenderSurfaceMouseActivities mouseActivities = new RenderSurfaceMouseActivities(this);
     private final RenderSurfaceKeyInputs keyInputs;
+    private final LocationBar locationBar = new LocationBar(camera);
 
     public RenderSurface(RenderSurfaceKeyInputs keyInputs) {
         this.keyInputs = keyInputs;
@@ -49,6 +51,7 @@ public class RenderSurface extends JPanel {
         setDoubleBuffered(true);
         setBackground(new Color(80, 80, 95));
 
+        RenderSurfaceMouseActivities mouseActivities = new RenderSurfaceMouseActivities(this);
         addMouseListener(mouseActivities);
         addMouseMotionListener(mouseActivities);
         addMouseWheelListener(mouseActivities);
@@ -56,9 +59,6 @@ public class RenderSurface extends JPanel {
 
         // Logical update
         new Timer(0, e -> update()).start();
-
-        WIDTH = getWidth();
-        HEIGHT = getHeight();
     }
 
     @Override
@@ -80,10 +80,10 @@ public class RenderSurface extends JPanel {
         drawCartesianLines();
         updateRectComponents(g2D);
         drawSelection(selectionStart, selectionEnd);
+        locationBar.update();
 
         AppGraphics.useGUI();
-        AppGraphics.drawPoint(camera, new Vector2(getWidth()/2, getHeight()/2), 4, true, Color.RED);
-        drawWorldLocation();
+        locationBar.draw(g2D, camera);
         drawDebugTexts(g2D);
         g2D.dispose();
     }
@@ -98,19 +98,6 @@ public class RenderSurface extends JPanel {
         AppGraphics.drawRect(
                 camera, start, end, 10, 2, true,
                 new Color(162, 84, 222, 70), Color.decode("#862bcc"));
-    }
-
-    private void drawWorldLocation() {
-        AppGraphics.drawRect(camera,
-                new Vector2(10, 10),
-                new Vector2(250, 40),
-                10, 1, true, Color.WHITE, Color.BLACK
-        );
-        AppGraphics.drawTextExt(
-                camera, new Vector2(12, 12),
-                Vector2.formatStr(camera.getWorldPosition()),
-                Color.BLACK, 1, 1
-        );
     }
 
     private void drawCartesianLines() {
@@ -128,14 +115,15 @@ public class RenderSurface extends JPanel {
 
     private void drawDebugTexts(Graphics2D g2D) {
         g2D.setColor(Color.YELLOW);
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 92), "Mouse(SCREEN) pos:    " + GridMapContext.MOUSE_POSITION.toString());
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 72), "Mouse(WORLD) pos:     " + Vector2.formatStr(camera.getWorldMousePosition()));
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 52), "Mouse(COMPONENT) pos: " + mouseActivities.mousePosition.toString());
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 12), "Camera Zoom:          " + camera.getZoom());
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 32), "Mouse(WORLD) pos: " + Vector2.formatStr(camera.getWorldMousePosition()));
+        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 12), "Camera Zoom:      " + camera.getZoom());
     }
 
     // =================== LOGICAL UPDATE =======================
     private void update() {
+        WIDTH = getWidth();
+        HEIGHT = getHeight();
+        if (!locationBar.hasInitialized) locationBar.init();
 
         // Flush out 1 action per draw call
         if (!actionManager.getActionQueue().isEmpty()) {
@@ -152,8 +140,6 @@ public class RenderSurface extends JPanel {
                 guideLineColor.getBlue(),
                 guideLineColorAlpha
         ));
-        int width = getWidth();
-        int height = getHeight();
         int cellSize = (int)(GridMapContext.CELL_SIZE * camera.getZoom());
         Vector2 camPos = camera.position;
 
@@ -162,14 +148,14 @@ public class RenderSurface extends JPanel {
         int startY = -(camPos.getY_int() % cellSize + cellSize) % cellSize;
 
         if (type == GuidelineType.DOTS) {
-            drawGuideDots(g2d, startX, width, cellSize, startY, height);
+            drawGuideDots(g2d, startX, WIDTH, cellSize, startY, HEIGHT);
         }
         else if (type == GuidelineType.LINES) {
-            drawGuideLines(g2d, startX, width, cellSize, height, startY);
+            drawGuideLines(g2d, startX, WIDTH, cellSize, HEIGHT, startY);
         }
         else {
-            drawGuideDots(g2d, startX, width, cellSize, startY, height);
-            drawGuideLines(g2d, startX, width, cellSize, height, startY);
+            drawGuideDots(g2d, startX, WIDTH, cellSize, startY, HEIGHT);
+            drawGuideLines(g2d, startX, WIDTH, cellSize, HEIGHT, startY);
         }
 
     }

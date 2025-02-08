@@ -1,5 +1,6 @@
 package com.sarrygeez;
 
+import com.sarrygeez.Components.RectComponent;
 import com.sarrygeez.Core.Rendering.GridMapContext;
 import com.sarrygeez.Data.Vector2;
 import net.miginfocom.swing.MigLayout;

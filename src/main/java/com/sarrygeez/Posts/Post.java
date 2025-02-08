@@ -1,6 +1,6 @@
 package com.sarrygeez.Posts;
 
-import com.sarrygeez.RectComponent;
+import com.sarrygeez.Components.RectComponent;
 
 @SuppressWarnings("unused")
 public abstract class Post extends RectComponent {

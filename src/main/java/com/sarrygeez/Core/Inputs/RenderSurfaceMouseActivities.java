@@ -1,6 +1,7 @@
 package com.sarrygeez.Core.Inputs;
 
 import com.sarrygeez.*;
+import com.sarrygeez.Components.RectComponent;
 import com.sarrygeez.Core.Actions.Goto;
 import com.sarrygeez.Core.Actions.SpawnPost;
 import com.sarrygeez.Core.Rendering.Camera;
@@ -37,7 +38,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (e.getButton() == 1) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
             if (getKeyInput().isActivated(KeyEvent.VK_SHIFT)) {
                 surface.isSelectionActive = true;
 
@@ -54,7 +55,11 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (e.getButton() != 3) { // Check for a right click
+        if (e.getButton() == MouseEvent.BUTTON1) {
+
+        }
+
+        if (e.getButton() != MouseEvent.BUTTON3) { // Check for a right click
             return;
         }
 
@@ -76,7 +81,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (e.getButton() == 1) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
             isPanning = false;
             lastMousePosition = null;
             exitSelection();
