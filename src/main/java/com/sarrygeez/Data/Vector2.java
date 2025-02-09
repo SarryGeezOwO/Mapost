@@ -1,5 +1,7 @@
 package com.sarrygeez.Data;
 
+import java.awt.*;
+
 @SuppressWarnings("unused")
 public class Vector2 {
     public float x;
@@ -42,6 +44,10 @@ public class Vector2 {
         );
     }
 
+    public static Point toPoint(Vector2 vec) {
+        return new Point(vec.getX_int(), vec.getY_int());
+    }
+
     public static Vector2 scale(Vector2 target, float scale) {
         return new Vector2(
                 target.x * scale,
@@ -50,7 +56,7 @@ public class Vector2 {
     }
 
     public static String formatStr(Vector2 vector) {
-        return String.format("(%.2f, %.2f)", vector.x, vector.y);
+        return String.format("%.2f, %.2f", vector.x, vector.y);
     }
 
     public static float dotProduct(Vector2 vec1, Vector2 vec2) {

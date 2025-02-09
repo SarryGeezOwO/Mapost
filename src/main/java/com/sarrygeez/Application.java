@@ -27,6 +27,7 @@ public class Application extends JFrame {
     public static final String APP_VERSION = "1.0.0";
     public static int WINDOW_WIDTH = 1400;
     public static int WINDOW_HEIGHT = 900;
+    public static final Vector2 WINDOW_LOCATION = new Vector2();
 
     public static final GridMapContext GRID_MAP_CONTEXT = new GridMapContext();
 
@@ -56,6 +57,12 @@ public class Application extends JFrame {
                 WINDOW_WIDTH = cp.getWidth();
                 WINDOW_HEIGHT = cp.getHeight();
                 cp.getCamera().updateSize();
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                WINDOW_LOCATION.x = getX();
+                WINDOW_LOCATION.y = getY();
             }
         });
 

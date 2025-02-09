@@ -43,13 +43,14 @@ public class RenderSurface extends JPanel {
     public Vector2 selectionEnd = null;
 
     private final RenderSurfaceKeyInputs keyInputs;
-    private final LocationBar locationBar = new LocationBar(camera);
+    private final LocationBar locationBar = new LocationBar(this, camera);
 
     public RenderSurface(RenderSurfaceKeyInputs keyInputs) {
         this.keyInputs = keyInputs;
 
         setDoubleBuffered(true);
         setBackground(new Color(80, 80, 95));
+        setLayout(null);
 
         RenderSurfaceMouseActivities mouseActivities = new RenderSurfaceMouseActivities(this);
         addMouseListener(mouseActivities);
@@ -80,10 +81,12 @@ public class RenderSurface extends JPanel {
         drawCartesianLines();
         updateRectComponents(g2D);
         drawSelection(selectionStart, selectionEnd);
-        locationBar.update();
 
         AppGraphics.useGUI();
-        locationBar.draw(g2D, camera);
+        AppGraphics.drawTextExt(
+                camera, new Vector2(WIDTH/2, HEIGHT-50),
+                "x         LOCATION         y", Color.WHITE, 3, 3
+        );
         drawDebugTexts(g2D);
         g2D.dispose();
     }
@@ -102,8 +105,8 @@ public class RenderSurface extends JPanel {
 
     private void drawCartesianLines() {
         Color midLineCol = Color.decode("#25252F");
-        AppGraphics.drawLine(camera, new Vector2(-100000,       0), new Vector2(100000,    0), 1,  midLineCol); // Horizontal
-        AppGraphics.drawLine(camera, new Vector2(0,       -100000), new Vector2(0,     100000), 1, midLineCol); // Vertical
+        AppGraphics.drawLine(camera, new Vector2(-100000,       0), new Vector2(100000,    0), 2,  midLineCol); // Horizontal
+        AppGraphics.drawLine(camera, new Vector2(0,       -100000), new Vector2(0,     100000), 2, midLineCol); // Vertical
     }
 
     private void updateRectComponents(Graphics2D g2D) {
@@ -123,7 +126,11 @@ public class RenderSurface extends JPanel {
     private void update() {
         WIDTH = getWidth();
         HEIGHT = getHeight();
-        if (!locationBar.hasInitialized) locationBar.init();
+        if (!locationBar.hasInitialized) {
+            locationBar.init();
+            add(locationBar);
+        }
+        locationBar.update();
 
         // Flush out 1 action per draw call
         if (!actionManager.getActionQueue().isEmpty()) {
@@ -164,7 +171,8 @@ public class RenderSurface extends JPanel {
         // GridPoints
         for (int x = startX; x < width; x += cellSize) {
             for (int y = startY; y < height; y += cellSize) {
-                g2d.fillOval(x-3, y-3, 6, 6);
+                int size = (camera.getZoom() > 1.25) ? 6 : 4;
+                g2d.fillOval(x-(size/2), y-(size/2), size, size);
             }
         }
     }

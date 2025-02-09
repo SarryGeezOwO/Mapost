@@ -55,9 +55,6 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON1) {
-
-        }
 
         if (e.getButton() != MouseEvent.BUTTON3) { // Check for a right click
             return;
@@ -170,7 +167,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
 
             if (rect.positionInsideBbox(Camera.MOUSE_CAM_POS))
             {
-                System.out.println("Rect detected");
+                Debug.log("Rect detected", LogLevel.DEBUG);
                 new InspectorView(rect, surface, mousePosition);
                 return true;
             }
