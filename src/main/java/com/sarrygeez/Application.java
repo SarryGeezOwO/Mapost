@@ -5,7 +5,6 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.fonts.inter.FlatInterFont;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.sarrygeez.Core.Inputs.GlobalInput;
-import com.sarrygeez.Core.Inputs.RenderSurfaceKeyInputs;
 import com.sarrygeez.Core.Rendering.GridMapContext;
 import com.sarrygeez.Data.Vector2;
 import com.sarrygeez.Posts.TextPost;
@@ -16,8 +15,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class Application extends JFrame {
@@ -44,9 +41,7 @@ public class Application extends JFrame {
     }
 
     private void init() {
-        RenderSurfaceKeyInputs keyInputs = new RenderSurfaceKeyInputs();
-        RenderSurface cp = new RenderSurface(keyInputs); // this stands for ContentPane ok? It's not something devious or whatever
-        addKeyListener(keyInputs);
+        RenderSurface cp = new RenderSurface(); // this stands for ContentPane ok? It's not something devious or whatever
         setContentPane(cp);
 
         setIconImage(AppTools.getSVG("AppIMG.svg").getImage());
@@ -63,13 +58,6 @@ public class Application extends JFrame {
             public void componentMoved(ComponentEvent e) {
                 WINDOW_LOCATION.x = getX();
                 WINDOW_LOCATION.y = getY();
-            }
-        });
-
-        addWindowFocusListener(new WindowAdapter() {
-            @Override
-            public void windowLostFocus(WindowEvent e) {
-                keyInputs.resetModifiers();
             }
         });
 

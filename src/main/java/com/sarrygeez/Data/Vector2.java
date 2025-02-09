@@ -37,6 +37,10 @@ public class Vector2 {
         return (int)y;
     }
 
+    public static Point toPoint(Vector2 vec) {
+        return new Point(vec.getX_int(), vec.getY_int());
+    }
+
     public static Vector2 mult(Vector2 a, Vector2 b) {
         return new Vector2(
                 a.x * b.x,
@@ -44,8 +48,12 @@ public class Vector2 {
         );
     }
 
-    public static Point toPoint(Vector2 vec) {
-        return new Point(vec.getX_int(), vec.getY_int());
+    public static Vector2 add(Vector2 a, Vector2 b) {
+        // Remember that the Y axis is inverted on our coordinate system
+        return new Vector2(
+                a.x + b.x,
+                a.y + b.y
+        );
     }
 
     public static Vector2 scale(Vector2 target, float scale) {
@@ -55,8 +63,8 @@ public class Vector2 {
         );
     }
 
-    public static String formatStr(Vector2 vector) {
-        return String.format("%.2f, %.2f", vector.x, vector.y);
+    public static String formatStr(Vector2 vector, boolean isInverted) {
+        return String.format("%.2f, %.2f", vector.x, (isInverted ? -vector.y : vector.y));
     }
 
     public static float dotProduct(Vector2 vec1, Vector2 vec2) {

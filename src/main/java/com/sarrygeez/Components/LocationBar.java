@@ -36,10 +36,6 @@ public class LocationBar extends JPanel {
 
     public void init() {
         hasInitialized = true;
-        setLocation(
-                RenderSurface.WIDTH/2 - 150,
-                RenderSurface.HEIGHT - 40
-        );
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -52,11 +48,20 @@ public class LocationBar extends JPanel {
     public void update() {
         Vector2 pos = camera.getWorldPosition();
         labelX.setText(String.format("%.2f", pos.x));
-        labelY.setText(String.format("%.2f", pos.y));
+        labelY.setText(String.format("%.2f", -pos.y));
+
+        // Verify location, before update location
+        Point loc = getLocation();
+        int newX = RenderSurface.WIDTH / 2 - 150;
+        int newY = RenderSurface.HEIGHT - 40;
+        if (loc.x == newX && loc.y == newY) {
+            return;
+        }
+        setLocation(newX, newY);
     }
 
     private void copy() {
-        StringSelection selection = new StringSelection(Vector2.formatStr(camera.getWorldPosition()));
+        StringSelection selection = new StringSelection(Vector2.formatStr(camera.getWorldPosition(), true));
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(selection, selection);
 

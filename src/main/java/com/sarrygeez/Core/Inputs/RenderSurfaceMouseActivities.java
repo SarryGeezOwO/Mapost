@@ -39,7 +39,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
     @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
-            if (getKeyInput().isActivated(KeyEvent.VK_SHIFT)) {
+            if (GlobalInput.isActivated(KeyEvent.VK_SHIFT)) {
                 surface.isSelectionActive = true;
 
                 if (surface.selectionStart == null) {
@@ -99,7 +99,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
         GridMapContext.MOUSE_POSITION.y = e.getYOnScreen();
         camera.updateCameraMousePosition(new Vector2(e.getX(), e.getY()));
 
-        if (getKeyInput().isActivated(KeyEvent.VK_SHIFT)
+        if (GlobalInput.isActivated(KeyEvent.VK_SHIFT)
                 && surface.isSelectionActive && surface.selectionStart != null) {
             surface.selectionEnd = Camera.MOUSE_CAM_POS;
             repaint();
@@ -108,7 +108,6 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
 
         // Disable selection on shift exit
         exitSelection();
-
 
         if (isPanning && lastMousePosition != null) {
             mousePosition = new Vector2(e.getX(), e.getY());
@@ -146,10 +145,6 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
 
     private float roundToOneDecimal(float value) {
         return Math.round((value * 10)) / 10f;
-    }
-
-    private RenderSurfaceKeyInputs getKeyInput() {
-        return surface.getKeyInputs();
     }
 
 

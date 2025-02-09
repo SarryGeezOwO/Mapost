@@ -1,4 +1,4 @@
-package com.sarrygeez.Core.Inputs;
+package com.sarrygeez.Data;
 
 public abstract class MouseActionAdapter {
 

@@ -3,7 +3,7 @@ package com.sarrygeez.Components;
 import com.sarrygeez.Core.Rendering.Camera;
 import com.sarrygeez.Data.Transform;
 import com.sarrygeez.Data.Vector2;
-import com.sarrygeez.Core.Inputs.MouseActionAdapter;
+import com.sarrygeez.Data.MouseActionAdapter;
 import com.sarrygeez.Tools.AppGraphics;
 
 import java.awt.*;

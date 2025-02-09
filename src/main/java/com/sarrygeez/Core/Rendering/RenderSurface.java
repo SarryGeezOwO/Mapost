@@ -6,7 +6,7 @@ import com.sarrygeez.Components.LocationBar;
 import com.sarrygeez.Components.RectComponent;
 import com.sarrygeez.Core.Actions.Action;
 import com.sarrygeez.Core.Actions.ActionManager;
-import com.sarrygeez.Core.Inputs.RenderSurfaceKeyInputs;
+import com.sarrygeez.Core.Inputs.GlobalInput;
 import com.sarrygeez.Core.Inputs.RenderSurfaceMouseActivities;
 import com.sarrygeez.Data.Vector2;
 import com.sarrygeez.Debug.Debug;
@@ -15,6 +15,7 @@ import com.sarrygeez.Tools.AppGraphics;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 /*
     A very unclear class object, literally breaking every rule of
@@ -42,11 +43,9 @@ public class RenderSurface extends JPanel {
     public Vector2 selectionStart = null;
     public Vector2 selectionEnd = null;
 
-    private final RenderSurfaceKeyInputs keyInputs;
     private final LocationBar locationBar = new LocationBar(this, camera);
 
-    public RenderSurface(RenderSurfaceKeyInputs keyInputs) {
-        this.keyInputs = keyInputs;
+    public RenderSurface() {
 
         setDoubleBuffered(true);
         setBackground(new Color(80, 80, 95));
@@ -81,6 +80,13 @@ public class RenderSurface extends JPanel {
         drawCartesianLines();
         updateRectComponents(g2D);
         drawSelection(selectionStart, selectionEnd);
+
+        if(GlobalInput.isActivated(KeyEvent.VK_ALT)) {
+            // Show mouse coordinate ( world )
+            AppGraphics.drawText(camera,
+                Vector2.add(Camera.MOUSE_CAM_POS, new Vector2(5, -3)),
+                Vector2.formatStr(camera.getWorldMousePosition(), true));
+        }
 
         AppGraphics.useGUI();
         AppGraphics.drawTextExt(
@@ -118,7 +124,6 @@ public class RenderSurface extends JPanel {
 
     private void drawDebugTexts(Graphics2D g2D) {
         g2D.setColor(Color.YELLOW);
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 32), "Mouse(WORLD) pos: " + Vector2.formatStr(camera.getWorldMousePosition()));
         AppGraphics.drawText(camera, new Vector2(10, getHeight() - 12), "Camera Zoom:      " + camera.getZoom());
     }
 
@@ -192,9 +197,5 @@ public class RenderSurface extends JPanel {
 
     public Camera getCamera() {
         return camera;
-    }
-
-    public RenderSurfaceKeyInputs getKeyInputs() {
-        return keyInputs;
     }
 }

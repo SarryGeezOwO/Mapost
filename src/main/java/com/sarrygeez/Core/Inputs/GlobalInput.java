@@ -1,10 +1,15 @@
 package com.sarrygeez.Core.Inputs;
 
+import com.sarrygeez.Data.KeyActionAdapter;
+import com.sarrygeez.Data.MouseActionAdapter;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.AWTEventListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class GlobalInput {
 
@@ -12,10 +17,20 @@ public class GlobalInput {
     private static JFrame frame;
 
     private static final ArrayList<MouseActionAdapter> mouseActions = new ArrayList<>();
+    private static final ArrayList<KeyActionAdapter> keyActions = new ArrayList<>();
+
+    private static final HashMap<Integer, Boolean> modifierKeys;
+    static {
+        // initialize hashmap keys
+        modifierKeys = new HashMap<>();
+        modifierKeys.put(KeyEvent.VK_CONTROL, false);
+        modifierKeys.put(KeyEvent.VK_SHIFT, false);
+        modifierKeys.put(KeyEvent.VK_ALT, false);
+    }
 
     private GlobalInput() {
         // Global mouse listener
-        final AWTEventListener listener = event -> {
+        final AWTEventListener mouseListener = event -> {
 
             MouseEvent me = ( MouseEvent ) event;
             Component c = me.getComponent ();
@@ -43,8 +58,31 @@ public class GlobalInput {
                 }
             }
         };
-        Toolkit.getDefaultToolkit ().addAWTEventListener ( listener, AWTEvent.MOUSE_EVENT_MASK );
 
+        // Global Key modifiers listener
+        final AWTEventListener keyListener = event -> {
+
+            if ( event.getID () == KeyEvent.KEY_PRESSED ) {
+                flipValue(((KeyEvent) event).getKeyCode(), true);
+            }
+            if ( event.getID () == KeyEvent.KEY_RELEASED ) {
+                flipValue(((KeyEvent) event).getKeyCode(), false);
+            }
+
+            for(KeyActionAdapter adapter : keyActions) {
+                if (isActivated(KeyEvent.VK_ALT))
+                    adapter.onAltMod();
+
+                if (isActivated(KeyEvent.VK_SHIFT))
+                    adapter.onShiftMod();
+
+                if (isActivated(KeyEvent.VK_CONTROL))
+                    adapter.onControlMod();
+            }
+        };
+
+        Toolkit.getDefaultToolkit ().addAWTEventListener ( mouseListener, AWTEvent.MOUSE_EVENT_MASK );
+        Toolkit.getDefaultToolkit ().addAWTEventListener ( keyListener, AWTEvent.KEY_EVENT_MASK );
     }
 
     public static void init(JFrame frame) {
@@ -59,7 +97,23 @@ public class GlobalInput {
         return instance;
     }
 
+    @SuppressWarnings("unused")
     public static void addMouseActionListener(MouseActionAdapter adapter) {
         mouseActions.add(adapter);
+    }
+
+    @SuppressWarnings("unused")
+    public static void addKeyListener(KeyActionAdapter adapter) {
+        keyActions.add(adapter);
+    }
+
+    public static boolean isActivated(int keycode) {
+        return modifierKeys.get(keycode);
+    }
+
+    private void flipValue(int keycode, boolean intoTrue) {
+        if (modifierKeys.containsKey(keycode) && modifierKeys.get(keycode) != intoTrue) {
+            modifierKeys.put(keycode, intoTrue);
+        }
     }
 }
