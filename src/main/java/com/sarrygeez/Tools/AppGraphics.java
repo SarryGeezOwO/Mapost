@@ -16,8 +16,10 @@ public class AppGraphics {
     private static GraphicMode mode = GraphicMode.CAMERA;
     private static Graphics2D gContext = null; // Graphical Context
 
-    private AppGraphics() {
-    }
+    public static final Vector2 zoomPoint = new Vector2();
+    public static float zoomValue = 0;
+
+    private AppGraphics() {}
     // NOTE: an option to draw relative to the camera or the window
     //       DrawGUI - elements not affected by camera position or scale
     //       Draw    - elements affected by camera position or scale
@@ -30,11 +32,13 @@ public class AppGraphics {
     // Set the mode to GUI (fixed to the screen)
     public static void useGUI() {
         mode = GraphicMode.GUI;
+        applyTransform(null);
     }
 
     // Set the mode to CAMERA (affected by camera position)
-    public static void useCamera() {
+    public static void useCamera(Transform camera) {
         mode = GraphicMode.CAMERA;
+        applyTransform(camera);
     }
 
     public static GraphicMode getMode() {
@@ -44,32 +48,22 @@ public class AppGraphics {
     // ====================================== PRIVATE FUNCTIONS ===========================
 
     private static void applyTransform(Transform camera) {
-        // keep track of scale T-T
-        float gcScale = (float) gContext.getTransform().getScaleX();
-
         gContext.setTransform(new AffineTransform());
         if (mode == GraphicMode.CAMERA) {
             gContext.translate(-camera.position.x, -camera.position.y);
-        }
-        else {
-            // GUI mode
-            gcScale = 1;
+            applyZoom(zoomValue);
         }
 
-        gContext.scale(gcScale, gcScale); // so sigma bro, kill me
     }
 
-    private static void resetTransform( AffineTransform originalTransform) {
-        gContext.setTransform(originalTransform);
+    private static void applyZoom(float zoom) {
+        gContext.scale(zoom, zoom);
     }
-
 
     // ====================================== DRAW FUNCTIONS =============================
 
-    public static void drawRect(Transform camera, Transform transform, int radius,
+    public static void drawRect(Transform transform, int radius,
             int borderThickness, Color bodyColor, Color borderColor) {
-        AffineTransform originalTransform = gContext.getTransform();
-        applyTransform(camera);
 
         // Border
         gContext.setColor(borderColor);
@@ -89,14 +83,10 @@ public class AppGraphics {
                 (int) transform.scaleToSize(false),
                 radius, radius
         );
-
-        resetTransform(originalTransform);
     }
 
-    public static void drawRect(Transform camera, Vector2 start, Vector2 end, int radius,
+    public static void drawRect(Vector2 start, Vector2 end, int radius,
             int thickness, boolean fillBody, Color bodyColor, Color borderColor) {
-        AffineTransform originalTransform = gContext.getTransform();
-        applyTransform(camera);
 
         Vector2 dimension = MathUtils.abs(MathUtils.getVector(start, end));
         Vector2 anchor = MathUtils.min(start, end);
@@ -117,15 +107,11 @@ public class AppGraphics {
                 dimension.getX_int(), dimension.getY_int(),
                 radius, radius
         );
-
-        resetTransform(originalTransform);
     }
 
 
-    public static void drawPoint(Transform camera, Vector2 position,
+    public static void drawPoint(Vector2 position,
             int thickness, boolean isOutline, Color color) {
-        AffineTransform originalTransform = gContext.getTransform();
-        applyTransform(camera);
 
         gContext.setColor(color);
         int offset = thickness / 2;
@@ -140,21 +126,15 @@ public class AppGraphics {
                     thickness, thickness);
         }
 
-        resetTransform(originalTransform);
     }
 
 
 
-    public static void drawLine(Transform camera,
-            Vector2 start, Vector2 end, int thickness, Color color) {
-        AffineTransform originalTransform = gContext.getTransform();
-        applyTransform(camera);
-
+    public static void drawLine(Vector2 start, Vector2 end, int thickness, Color color) {
         gContext.setColor(color);
         gContext.setStroke(new BasicStroke(thickness));
         gContext.drawLine((int) start.x, (int) start.y, (int) end.x, (int) end.y);
         gContext.setStroke(new BasicStroke());
-        resetTransform(originalTransform);
     }
 
 /*
@@ -186,8 +166,8 @@ public class AppGraphics {
      *      2 = bottom<br>
      *      3 = center
      */
-    public static void drawText(Transform camera, Vector2 position, String text) {
-        drawTextExt(camera, position, text, gContext.getColor(), 1, 2);
+    public static void drawText(Vector2 position, String text) {
+        drawTextExt(position, text, gContext.getColor(), 1, 2);
         // This follows the same as the gContext.drawString();
     }
 
@@ -203,10 +183,8 @@ public class AppGraphics {
      *      2 = bottom<br>
      *      3 = center
      */
-    public static void drawTextExt(Transform camera, Vector2 position,
+    public static void drawTextExt(Vector2 position,
             String text, Color color, int h_alignment, int v_alignment) {
-        AffineTransform originalTransform = gContext.getTransform();
-        applyTransform(camera);
 
         gContext.setColor(color);
         FontMetrics fm = gContext.getFontMetrics();
@@ -237,7 +215,5 @@ public class AppGraphics {
             gContext.drawString(line, offsetX, offsetY);
             offsetY += fontHeight;
         }
-
-        resetTransform(originalTransform);
     }
 }

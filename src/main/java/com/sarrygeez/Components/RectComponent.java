@@ -58,7 +58,7 @@ public class RectComponent {
 
     public void draw(Graphics2D g2d, Camera camera) {
         // override this
-        AppGraphics.drawRect(camera, transform, radius, borderWidth, background, borderColor);
+        AppGraphics.drawRect(transform, radius, borderWidth, background, borderColor);
     }
 
     public void addMouseActionListener(MouseActionAdapter adapter) {

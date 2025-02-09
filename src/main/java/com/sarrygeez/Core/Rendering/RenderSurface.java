@@ -70,32 +70,28 @@ public class RenderSurface extends JPanel {
 
         // Guidelines duh...
         drawGridGuidelines(g2D, guidelineType);
-
-        //Apply zoom scale
-        g2D.scale(camera.getZoom(), camera.getZoom());
-
-        AppGraphics.setGContext(g2D); // Update Graphical context
-        AppGraphics.useCamera(); // ========= CAMERA BASED RENDER
-
-        drawCartesianLines();
-        updateRectComponents(g2D);
-        drawSelection(selectionStart, selectionEnd);
-
+        AppGraphics.setGContext(g2D);
+        AppGraphics.zoomValue = camera.getZoom();
+        // GUI first before Camera based
 
         AppGraphics.useGUI(); // ================ GUI BASED RENDER
         if(GlobalInput.isActivated(KeyEvent.VK_ALT)) {
             // Show mouse coordinate ( world )
             g2D.setColor(Color.BLACK);
             Vector2 mouse = new Vector2(getMousePosition().x, getMousePosition().y);
-            AppGraphics.drawText(camera,
+            AppGraphics.drawText(
                     Vector2.add(mouse, new Vector2(3, -3)),
                     Vector2.formatStr(camera.getWorldMousePosition(), true));
         }
-        AppGraphics.drawTextExt(
-                camera, new Vector2(WIDTH/2, HEIGHT-50),
+        AppGraphics.drawTextExt(new Vector2(WIDTH/2, HEIGHT-50),
                 "x         LOCATION         y", Color.WHITE, 3, 3
         );
         drawDebugTexts(g2D);
+
+        AppGraphics.useCamera(camera); // ========= CAMERA BASED RENDER
+        drawCartesianLines();
+        updateRectComponents(g2D);
+        drawSelection(selectionStart, selectionEnd);
         g2D.dispose();
     }
 
@@ -107,14 +103,14 @@ public class RenderSurface extends JPanel {
             return;
         }
         AppGraphics.drawRect(
-                camera, start, end, 10, 2, true,
+                start, end, 10, 2, true,
                 new Color(162, 84, 222, 70), Color.decode("#862bcc"));
     }
 
     private void drawCartesianLines() {
         Color midLineCol = Color.decode("#25252F");
-        AppGraphics.drawLine(camera, new Vector2(-100000,       0), new Vector2(100000,    0), 2,  midLineCol); // Horizontal
-        AppGraphics.drawLine(camera, new Vector2(0,       -100000), new Vector2(0,     100000), 2, midLineCol); // Vertical
+        AppGraphics.drawLine(new Vector2(-100000,       0), new Vector2(100000,    0), 2,  midLineCol); // Horizontal
+        AppGraphics.drawLine(new Vector2(0,       -100000), new Vector2(0,     100000), 2, midLineCol); // Vertical
     }
 
     private void updateRectComponents(Graphics2D g2D) {
@@ -126,7 +122,7 @@ public class RenderSurface extends JPanel {
 
     private void drawDebugTexts(Graphics2D g2D) {
         g2D.setColor(Color.YELLOW);
-        AppGraphics.drawText(camera, new Vector2(10, getHeight() - 12), "Camera Zoom:      " + camera.getZoom());
+        AppGraphics.drawText(new Vector2(10, getHeight() - 12), "Camera Zoom:      " + camera.getZoom());
     }
 
     // =================== LOGICAL UPDATE =======================

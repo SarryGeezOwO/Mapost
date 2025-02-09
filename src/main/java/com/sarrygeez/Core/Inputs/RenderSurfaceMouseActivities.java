@@ -10,6 +10,7 @@ import com.sarrygeez.Core.Rendering.RenderSurface;
 import com.sarrygeez.Data.Vector2;
 import com.sarrygeez.Logging.Debug;
 import com.sarrygeez.Logging.LogLevel;
+import com.sarrygeez.Tools.AppGraphics;
 import com.sarrygeez.Tools.MathUtils;
 import net.miginfocom.swing.MigLayout;
 
@@ -23,7 +24,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
     private final Camera camera;
 
     private Vector2 lastMousePosition = null;
-    public Vector2 mousePosition = new Vector2(); // based actually on this component
+    public static Vector2 MOUSE_POSITION = new Vector2(); // based actually on this component
     public boolean isPanning = false;
 
     public RenderSurfaceMouseActivities(RenderSurface surface) {
@@ -63,7 +64,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
         boolean flag = containsRect();
         if (!flag) {
             // open context menu
-            Vector2 screenPos = mousePosition;
+            Vector2 screenPos = MOUSE_POSITION;
 
             JPopupMenu menu = new JPopupMenu();
             menu.setLayout(new MigLayout("FillX, FlowY, insets 0, gap 5"));
@@ -110,12 +111,12 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
         exitSelection();
 
         if (isPanning && lastMousePosition != null) {
-            mousePosition = new Vector2(e.getX(), e.getY());
-            Vector2 dir = MathUtils.getVector(lastMousePosition, mousePosition);
+            MOUSE_POSITION = new Vector2(e.getX(), e.getY());
+            Vector2 dir = MathUtils.getVector(lastMousePosition, MOUSE_POSITION);
 
             camera.position.x -= dir.x * camera.panSpeed / camera.scale.x;
             camera.position.y -= dir.y * (camera.panSpeed/2) / camera.scale.y;
-            lastMousePosition = mousePosition;
+            lastMousePosition = MOUSE_POSITION;
 
         }
         repaint();
@@ -123,11 +124,11 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        mousePosition.x = e.getX();
-        mousePosition.y = e.getY();
+        MOUSE_POSITION.x = e.getX();
+        MOUSE_POSITION.y = e.getY();
         GridMapContext.MOUSE_POSITION.x = e.getXOnScreen();
         GridMapContext.MOUSE_POSITION.y = e.getYOnScreen();
-        camera.updateCameraMousePosition(mousePosition);
+        camera.updateCameraMousePosition(MOUSE_POSITION);
         repaint();
     }
 
@@ -138,7 +139,8 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
 
         if (zoom+add >= 0.5f && zoom+add <= 2) {
             camera.setZoom(roundToOneDecimal(zoom + add));
-            camera.updateCameraMousePosition(mousePosition);
+            camera.updateCameraMousePosition(MOUSE_POSITION);
+            AppGraphics.zoomPoint.set(e.getX(), e.getY());
         }
         repaint();
     }
@@ -163,7 +165,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
             if (rect.positionInsideBbox(Camera.MOUSE_CAM_POS))
             {
                 Debug.log("Rect detected", LogLevel.DEBUG);
-                new InspectorView(rect, surface, mousePosition);
+                new InspectorView(rect, surface, MOUSE_POSITION);
                 return true;
             }
 
@@ -207,7 +209,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
             whereInput.add(new JLabel("Y: "));
             whereInput.add(yNum, "wrap, grow, width 120:120:120");
             whereInput.add(confirm, "span, grow");
-            whereInput.show(invoker, mousePosition.getX_int(), mousePosition.getY_int());
+            whereInput.show(invoker, MOUSE_POSITION.getX_int(), MOUSE_POSITION.getY_int());
         });
 
         return item;
@@ -246,7 +248,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
             whereInput.add(yNum, "wrap, grow, width 120:120:120");
             whereInput.add(message, "wrap, span, grow, height 170:170:170");
             whereInput.add(confirm, "span, grow");
-            whereInput.show(invoker, mousePosition.getX_int(), mousePosition.getY_int());
+            whereInput.show(invoker, MOUSE_POSITION.getX_int(), MOUSE_POSITION.getY_int());
         });
 
         return item;
@@ -268,7 +270,7 @@ public class RenderSurfaceMouseActivities implements MouseListener, MouseMotionL
 
                 menu.add(btn, "span, grow");
             }
-            menu.show(invoker, mousePosition.getX_int(), mousePosition.getY_int());
+            menu.show(invoker, MOUSE_POSITION.getX_int(), MOUSE_POSITION.getY_int());
         });
         return change;
     }

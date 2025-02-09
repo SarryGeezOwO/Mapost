@@ -37,6 +37,16 @@ public class Vector2 {
         return (int)y;
     }
 
+    public void set(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void set(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public static Point toPoint(Vector2 vec) {
         return new Point(vec.getX_int(), vec.getY_int());
     }
