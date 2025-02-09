@@ -1,4 +1,4 @@
-package com.sarrygeez.Debug;
+package com.sarrygeez.Logging;
 
 @SuppressWarnings("unused")
 public enum LogLevel {

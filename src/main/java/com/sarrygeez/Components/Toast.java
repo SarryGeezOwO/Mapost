@@ -1,5 +1,6 @@
 package com.sarrygeez.Components;
 
+import com.formdev.flatlaf.fonts.inter.FlatInterFont;
 import com.sarrygeez.Application;
 import com.sarrygeez.Data.Vector2;
 
@@ -36,6 +37,7 @@ public class Toast extends JWindow {
             {
                 Graphics2D g2d = (Graphics2D)g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setFont(new Font(FlatInterFont.FAMILY, Font.PLAIN, 14));
 
                 int wid = g2d.getFontMetrics().stringWidth(message);
                 int hei = g2d.getFontMetrics().getHeight();
@@ -48,7 +50,7 @@ public class Toast extends JWindow {
 
                 // set the color of text
                 g2d.setColor(new Color(255, 255, 255, 240));
-                g2d.drawString(message, 25, 27);
+                g2d.drawString(message, 25, 30);
                 int t = 250;
 
                 // draw the shadow of the toast

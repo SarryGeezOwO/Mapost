@@ -1,4 +1,4 @@
-package com.sarrygeez.Debug;
+package com.sarrygeez.Logging;
 
 import java.awt.*;
 import java.util.HashMap;

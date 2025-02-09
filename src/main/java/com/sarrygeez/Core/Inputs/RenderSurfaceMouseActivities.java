@@ -8,8 +8,8 @@ import com.sarrygeez.Core.Rendering.Camera;
 import com.sarrygeez.Core.Rendering.GridMapContext;
 import com.sarrygeez.Core.Rendering.RenderSurface;
 import com.sarrygeez.Data.Vector2;
-import com.sarrygeez.Debug.Debug;
-import com.sarrygeez.Debug.LogLevel;
+import com.sarrygeez.Logging.Debug;
+import com.sarrygeez.Logging.LogLevel;
 import com.sarrygeez.Tools.MathUtils;
 import net.miginfocom.swing.MigLayout;
 

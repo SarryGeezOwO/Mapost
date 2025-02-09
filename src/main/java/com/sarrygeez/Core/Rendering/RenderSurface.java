@@ -9,8 +9,8 @@ import com.sarrygeez.Core.Actions.ActionManager;
 import com.sarrygeez.Core.Inputs.GlobalInput;
 import com.sarrygeez.Core.Inputs.RenderSurfaceMouseActivities;
 import com.sarrygeez.Data.Vector2;
-import com.sarrygeez.Debug.Debug;
-import com.sarrygeez.Debug.LogLevel;
+import com.sarrygeez.Logging.Debug;
+import com.sarrygeez.Logging.LogLevel;
 import com.sarrygeez.Tools.AppGraphics;
 
 import javax.swing.*;
@@ -26,7 +26,7 @@ public class RenderSurface extends JPanel {
 
     @SuppressWarnings("unused")
     public enum GuidelineType {
-        DOTS, LINES, BOTH
+        DOTS, LINES, BOTH, NONE
     }
 
     public final Camera camera = new Camera();
@@ -81,14 +81,16 @@ public class RenderSurface extends JPanel {
         updateRectComponents(g2D);
         drawSelection(selectionStart, selectionEnd);
 
+
+        AppGraphics.useGUI(); // ================ GUI BASED RENDER
         if(GlobalInput.isActivated(KeyEvent.VK_ALT)) {
             // Show mouse coordinate ( world )
+            g2D.setColor(Color.BLACK);
+            Vector2 mouse = new Vector2(getMousePosition().x, getMousePosition().y);
             AppGraphics.drawText(camera,
-                Vector2.add(Camera.MOUSE_CAM_POS, new Vector2(5, -3)),
-                Vector2.formatStr(camera.getWorldMousePosition(), true));
+                    Vector2.add(mouse, new Vector2(3, -3)),
+                    Vector2.formatStr(camera.getWorldMousePosition(), true));
         }
-
-        AppGraphics.useGUI();
         AppGraphics.drawTextExt(
                 camera, new Vector2(WIDTH/2, HEIGHT-50),
                 "x         LOCATION         y", Color.WHITE, 3, 3
@@ -165,7 +167,7 @@ public class RenderSurface extends JPanel {
         else if (type == GuidelineType.LINES) {
             drawGuideLines(g2d, startX, WIDTH, cellSize, HEIGHT, startY);
         }
-        else {
+        else if (type == GuidelineType.BOTH) {
             drawGuideDots(g2d, startX, WIDTH, cellSize, startY, HEIGHT);
             drawGuideLines(g2d, startX, WIDTH, cellSize, HEIGHT, startY);
         }

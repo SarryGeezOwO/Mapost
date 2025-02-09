@@ -3,8 +3,8 @@ package com.sarrygeez.Components;
 import com.sarrygeez.Core.Rendering.Camera;
 import com.sarrygeez.Core.Rendering.RenderSurface;
 import com.sarrygeez.Data.Vector2;
-import com.sarrygeez.Debug.Debug;
-import com.sarrygeez.Debug.LogLevel;
+import com.sarrygeez.Logging.Debug;
+import com.sarrygeez.Logging.LogLevel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -29,6 +29,7 @@ public class LocationBar extends JPanel {
         Dimension size = new Dimension(300, 30);
         setSize(size);
 
+        setBackground(Color.decode("#191a21"));
         setLayout(new MigLayout("fill, insets 5, gap 5"));
         add(labelX, "align center");
         add(labelY, "align center");
@@ -41,6 +42,16 @@ public class LocationBar extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 copy();
                 surface.requestFocus();
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                setBackground(Color.decode("#252732"));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                setBackground(Color.decode("#191a21"));
             }
         });
     }
